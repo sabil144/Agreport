@@ -1,0 +1,489 @@
+<!-- Fertiliser Trade Morning Brief -->
+<title>Fertiliser Trade Morning Brief</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg:#0D0B08;
+    --panel:#17130E;
+    --panel2:#211911;
+    --border:#2A2219;
+    --gold:#CBA56A;
+    --bull:#57D38C;
+    --warn:#E9B554;
+    --elev:#FF9E4A;
+    --crit:#FF5A4D;
+    --macro:#5DA9FF;
+    --ink:#F3EEE4;
+    --ink-dim:#B9AF9E;
+    --ink-faint:#7C7264;
+    color-scheme: dark;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', system-ui, sans-serif;
+    padding:0 16px;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .wrap{max-width:1100px;margin:0 auto;padding-block:28px 60px;}
+
+  /* ---------- Masthead ---------- */
+  .masthead{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    gap:16px;flex-wrap:wrap;
+    border-bottom:1px solid var(--border);
+    padding-bottom:18px;margin-bottom:22px;
+  }
+  .brand{
+    font-family:'Fraunces', Georgia, serif;
+    font-weight:900;
+    font-size:15px;
+    letter-spacing:2.5px;
+    text-transform:uppercase;
+    color:var(--gold);
+  }
+  .brand small{
+    display:block;font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;letter-spacing:1.5px;color:var(--ink-faint);
+    margin-top:4px;font-weight:500;text-transform:none;
+  }
+  .datebox{
+    text-align:right;font-family:'IBM Plex Mono', monospace;
+    font-size:11px;color:var(--ink-dim);letter-spacing:.5px;
+  }
+  .datebox .lbl{color:var(--ink-faint);text-transform:uppercase;letter-spacing:1.5px;font-size:9.5px;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    display:flex;gap:36px;flex-wrap:wrap;
+    padding:26px 0 30px;border-bottom:1px solid var(--border);margin-bottom:26px;
+  }
+  .hero-main{flex:1 1 480px;min-width:0;}
+  .eyebrow{
+    font-family:'IBM Plex Sans';font-weight:700;font-size:13px;
+    letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);
+    margin:0 0 10px;
+  }
+  h1.headline{
+    font-family:'Playfair Display', Georgia, serif;
+    font-weight:900;
+    font-size:clamp(28px,4.2vw,44px);
+    line-height:1.12;margin:0 0 14px;color:var(--ink);
+    text-wrap:balance;
+  }
+  .dek{
+    font-size:15px;line-height:1.6;color:var(--ink-dim);
+    max-width:62ch;margin:0;
+  }
+  .dek b{color:var(--ink);font-weight:600;}
+
+  .hero-side{
+    flex:0 0 260px;
+    display:flex;flex-direction:column;gap:10px;
+    justify-content:center;
+  }
+  .status-pill{
+    display:flex;align-items:center;gap:10px;
+    background:var(--panel);border:1px solid var(--border);
+    border-radius:10px;padding:14px 16px;
+  }
+  .status-dot{
+    width:10px;height:10px;border-radius:50%;flex:none;
+    background:var(--crit);
+    box-shadow:0 0 0 0 rgba(255,90,77,.6);
+    animation:pulse 2.2s infinite;
+  }
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 rgba(255,90,77,.55);}
+    70%{box-shadow:0 0 0 8px rgba(255,90,77,0);}
+    100%{box-shadow:0 0 0 0 rgba(255,90,77,0);}
+  }
+  .status-text .t1{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:1.5px;color:var(--ink-faint);text-transform:uppercase;}
+  .status-text .t2{font-family:'Fraunces';font-weight:700;font-size:15px;color:var(--crit);}
+
+  /* ---------- KPI strip ---------- */
+  .kpi-grid{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:30px;
+  }
+  @media (max-width:820px){.kpi-grid{grid-template-columns:repeat(2,1fr);}}
+  .kpi{
+    background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    padding:16px 16px 14px;transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .kpi:hover{transform:translateY(-3px);box-shadow:0 8px 22px rgba(0,0,0,.35);}
+  .kpi .klabel{
+    font-family:'IBM Plex Sans';font-weight:700;font-size:10.5px;
+    letter-spacing:1.8px;text-transform:uppercase;color:var(--gold);margin-bottom:8px;
+  }
+  .kpi .kval{
+    font-family:'IBM Plex Mono';font-weight:600;font-size:25px;
+    font-variant-numeric:tabular-nums;color:var(--ink);line-height:1.1;
+  }
+  .kpi .kunit{font-size:12px;color:var(--ink-faint);font-weight:400;margin-left:4px;}
+  .kpi .kchange{
+    font-family:'IBM Plex Mono';font-size:12px;margin-top:6px;font-variant-numeric:tabular-nums;
+    display:flex;align-items:center;gap:5px;
+  }
+  .up{color:var(--elev);} .down{color:var(--bull);} .flat{color:var(--ink-faint);} .risk{color:var(--crit);}
+  .kpi .kdate{font-family:'IBM Plex Mono';font-size:10px;color:var(--ink-faint);margin-top:8px;}
+
+  /* ---------- Section shell ---------- */
+  section{margin-bottom:28px;}
+  .sec-head{
+    display:flex;align-items:baseline;gap:12px;margin-bottom:14px;
+  }
+  .sec-num{
+    font-family:'IBM Plex Mono';font-size:11px;color:var(--ink-faint);letter-spacing:1px;
+  }
+  h2.sec-title{
+    font-family:'IBM Plex Sans';font-weight:700;font-size:13.5px;
+    letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);
+    margin:0;
+  }
+  .sec-line{flex:1;height:1px;background:var(--border);}
+
+  .card{
+    background:var(--panel);border:1px solid var(--border);border-radius:12px;
+    padding:20px 22px;
+  }
+  .grid-2{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;}
+  @media (max-width:760px){.grid-2{grid-template-columns:1fr;}}
+
+  h3.sub{
+    font-family:'Fraunces';font-weight:600;font-size:19px;color:var(--ink);
+    margin:0 0 10px;text-wrap:balance;
+  }
+  p{font-size:14.5px;line-height:1.65;color:var(--ink-dim);margin:0 0 10px;}
+  p b, li b{color:var(--ink);font-weight:600;}
+  ul{margin:0 0 10px;padding-left:18px;}
+  li{font-size:14.5px;line-height:1.6;color:var(--ink-dim);margin-bottom:6px;}
+
+  .changed{
+    display:flex;gap:10px;align-items:flex-start;
+    background:var(--panel2);border:1px solid var(--border);border-left:3px solid var(--gold);
+    border-radius:8px;padding:10px 14px;margin-top:12px;
+  }
+  .changed .clabel{
+    font-family:'IBM Plex Sans';font-weight:700;font-size:9.5px;letter-spacing:1.5px;
+    text-transform:uppercase;color:var(--gold);white-space:nowrap;flex:none;padding-top:2px;
+  }
+  .changed p{margin:0;color:var(--ink);font-size:13.5px;}
+
+  table{width:100%;border-collapse:collapse;font-family:'IBM Plex Mono';font-size:13px;font-variant-numeric:tabular-nums;}
+  th{
+    text-align:left;font-family:'IBM Plex Sans';font-weight:700;font-size:10px;
+    letter-spacing:1.2px;text-transform:uppercase;color:var(--ink-faint);
+    padding:0 10px 8px 0;border-bottom:1px solid var(--border);
+  }
+  td{padding:9px 10px 9px 0;border-bottom:1px solid var(--border);color:var(--ink);}
+  tr:last-child td{border-bottom:none;}
+  td.num{text-align:right;}
+  th.num{text-align:right;}
+  .tblwrap{overflow-x:auto;}
+
+  .tag{
+    display:inline-block;font-family:'IBM Plex Mono';font-size:10.5px;font-weight:500;
+    padding:3px 9px;border-radius:20px;border:1px solid var(--border);
+    color:var(--ink-dim);letter-spacing:.3px;
+  }
+  .tag.gold{border-color:rgba(203,165,106,.4);color:var(--gold);}
+
+  /* ---------- Threat radar (simplified) ---------- */
+  .radar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+  @media (max-width:760px){.radar{grid-template-columns:repeat(2,1fr);}}
+  .rnode{
+    background:var(--panel2);border:1px solid var(--border);border-radius:10px;
+    padding:14px 14px 12px;position:relative;overflow:hidden;
+  }
+  .rnode.crit{border-color:rgba(255,90,77,.45);}
+  .rnode .rname{font-family:'IBM Plex Sans';font-weight:700;font-size:10.5px;letter-spacing:1.3px;text-transform:uppercase;color:var(--ink-dim);margin-bottom:6px;}
+  .rnode .rscore{font-family:'IBM Plex Mono';font-weight:600;font-size:28px;color:var(--ink);font-variant-numeric:tabular-nums;}
+  .rnode.crit .rscore{color:var(--crit);}
+  .rnode .rtrend{font-family:'IBM Plex Mono';font-size:11.5px;margin-top:2px;font-variant-numeric:tabular-nums;}
+  .rnode .rspark{font-family:'IBM Plex Mono';font-size:13px;color:var(--ink-faint);letter-spacing:1px;margin-top:8px;}
+
+  /* ---------- Sourcing flag ---------- */
+  .flagbox{
+    background:linear-gradient(135deg, rgba(203,165,106,.09), rgba(203,165,106,.02));
+    border:1px solid rgba(203,165,106,.35);border-radius:12px;padding:22px 24px;
+  }
+  .flagbox .sec-title{color:var(--gold);}
+  .route-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
+  @media (max-width:760px){.route-grid{grid-template-columns:1fr;}}
+  .route{
+    background:var(--panel);border:1px solid var(--border);border-radius:9px;padding:12px 14px;
+  }
+  .route .rlane{font-family:'IBM Plex Mono';font-size:12px;color:var(--gold);font-weight:600;margin-bottom:6px;}
+  .route p{font-size:13px;margin:0;color:var(--ink-dim);line-height:1.55;}
+
+  /* ---------- Footer ---------- */
+  footer{
+    margin-top:34px;padding-top:18px;border-top:1px solid var(--border);
+    font-family:'IBM Plex Mono';font-size:11px;color:var(--ink-faint);
+    display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  }
+  .sources{margin-top:14px;}
+  .sources summary{
+    cursor:pointer;font-family:'IBM Plex Sans';font-weight:600;font-size:12px;
+    color:var(--ink-dim);letter-spacing:.3px;
+  }
+  .sources ol{
+    font-family:'IBM Plex Sans';font-size:12px;color:var(--ink-faint);line-height:1.8;
+    margin:10px 0 0;padding-left:20px;
+  }
+  .sources a{color:var(--macro);text-decoration:none;}
+  .sources a:hover{text-decoration:underline;}
+
+  @media (prefers-reduced-motion: reduce){
+    .status-dot{animation:none;}
+    .kpi:hover{transform:none;}
+  }
+</style>
+
+<div class="wrap">
+
+  <div class="masthead">
+    <div class="brand">Fertiliser Trade Morning Brief
+      <small>Grainmarketplace26 &middot; Nitrogen &middot; Phosphate &middot; Potash &middot; Freight</small>
+    </div>
+    <div class="datebox">
+      <div class="lbl">Issued</div>
+      Saturday, 26 September 2026 &middot; 07:00 AEST
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-main">
+      <p class="eyebrow">Executive Insight</p>
+      <h1 class="headline">Hormuz Talks Move to New York, the Strait Stays Shut</h1>
+      <p class="dek">Iran tabled a 60&#8209;day ceasefire and phased Hormuz reopening at UNGA on <b>23&#8211;24 Sep</b>; Washington rejected lifting the blockade without proof of goodwill first. Day 208 of closure: <b>1% of normal tanker throughput</b>, 376 vessels stranded, war&#8209;risk cover at <b>40&times; pre&#8209;crisis</b>. Urea eased on China's export release and diplomacy optimism; DAP/MAP held near cycle highs on China's export curbs. Nothing here changes near&#8209;term sourcing economics from the Gulf &mdash; Duqm and formula pricing remain the workaround.</p>
+    </div>
+    <div class="hero-side">
+      <div class="status-pill">
+        <div class="status-dot"></div>
+        <div class="status-text">
+          <div class="t1">Strait of Hormuz</div>
+          <div class="t2">Closed &middot; Day 208</div>
+        </div>
+      </div>
+      <div class="status-pill">
+        <div class="status-dot" style="background:var(--warn);animation:none;box-shadow:none;"></div>
+        <div class="status-text">
+          <div class="t1">Diplomacy Track</div>
+          <div class="t2" style="color:var(--warn);">Preliminary &middot; No timeline</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI STRIP -->
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="klabel">Urea, FOB benchmark</div>
+      <div class="kval">443<span class="kunit">$/t</span></div>
+      <div class="kchange down">&#9660; eased on China quota release + Hormuz talk optimism</div>
+      <div class="kdate">Middle East benchmark &middot; 4 Sep 2026</div>
+    </div>
+    <div class="kpi">
+      <div class="klabel">DAP, India CFR awards</div>
+      <div class="kval">~925<span class="kunit">$/t</span></div>
+      <div class="kchange up">&#9650; near cycle highs; China curbs, sulphur costs bite</div>
+      <div class="kdate">Latest tender / US retail ref &middot; w/e 18 Sep 2026</div>
+    </div>
+    <div class="kpi">
+      <div class="klabel">Potash (MOP), US ref.</div>
+      <div class="kval">495<span class="kunit">$/t</span></div>
+      <div class="kchange flat">&#8212; broadly steady week on week</div>
+      <div class="kdate">DTN weekly retail &middot; w/e 18 Sep 2026</div>
+    </div>
+    <div class="kpi">
+      <div class="klabel">Hormuz throughput</div>
+      <div class="kval">1<span class="kunit">% of normal</span></div>
+      <div class="kchange risk">&#9650; 376 vessels stranded &middot; VLCC premium ~$10m/voyage</div>
+      <div class="kdate">Day 208 &middot; 25 Sep 2026</div>
+    </div>
+  </div>
+
+  <!-- 1. UREA -->
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2 class="sec-title">Urea &mdash; Nitrogen</h2><div class="sec-line"></div></div>
+    <div class="card grid-2">
+      <div>
+        <h3 class="sub">China's export tap loosens, price gives back the risk premium</h3>
+        <p>Middle East prilled benchmark eased to <b>$443/t on 4 September</b>, down slightly on the day but still <b>+13.6% month&#8209;on&#8209;month</b> and <b>+13.2% year&#8209;on&#8209;year</b>. Beijing expanded its 2026 export allowance to roughly <b>3.3 million tonnes</b> (2.97mt state trading + 0.33mt non&#8209;state) &mdash; down from ~5mt in 2025 &mdash; concentrated into a narrow June&#8211;August window, with July shipments jumping to ~403,000t from just 7,000t in June.</p>
+        <p>China is running a dual&#8209;lever policy: rationing volume while setting FOB price floors &mdash; <b>$430/t prilled and $440/t granular</b> for non&#8209;India business, and a steeper <b>$500/t floor for India&#8209;bound cargo</b>. Regional spreads are wide: September benchmarks range from <b>$380&#8211;385/t</b> (Black Sea prilled) to <b>$502.5/t</b> (Egypt large granular).</p>
+        <p>Demand-side: India's RCF tender absorbed <b>1.78mt of bids below $400/t</b>; an earlier NFL tender drew <b>6.25mt of bids against a 1.7mt target</b>, underscoring how import&#8209;dependent buyers are still chasing scarce cargo even as headline prices soften.</p>
+      </div>
+      <div>
+        <div class="tblwrap">
+          <table>
+            <tr><th>Basis</th><th class="num">$/t</th></tr>
+            <tr><td>Black Sea, prilled</td><td class="num">380&#8211;385</td></tr>
+            <tr><td>Middle East, prilled (benchmark)</td><td class="num">443</td></tr>
+            <tr><td>China floor, non&#8209;India, granular</td><td class="num">440</td></tr>
+            <tr><td>China floor, India&#8209;bound</td><td class="num">500</td></tr>
+            <tr><td>Egypt, large granular</td><td class="num">502.5</td></tr>
+            <tr><td>US retail (domestic ref.)</td><td class="num">659</td></tr>
+          </table>
+        </div>
+        <span class="tag gold">China quota: 3.3mt for 2026</span>
+      </div>
+    </div>
+    <div class="changed"><span class="clabel">Since last update</span><p>Benchmark eased ~$0.30 to $443/t as China's July export surge and Hormuz-talk optimism outweighed seasonal Northern Hemisphere demand tapering and softer Brazilian buying.</p></div>
+  </section>
+
+  <!-- 2. DAP/TSP/PHOSPHATE -->
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2 class="sec-title">DAP &middot; TSP &middot; Phosphate</h2><div class="sec-line"></div></div>
+    <div class="card grid-2">
+      <div>
+        <h3 class="sub">China's curbs extended, sulphur costs stack on top</h3>
+        <p>China's phosphate export restrictions (DAP, MAP, select NPK) &mdash; first imposed mid&#8209;March 2026 after the Hormuz disruption began &mdash; were <b>extended through August 2026</b>, now covering <b>50&#8211;80% of China's fertiliser export volumes</b>. Russia is separately capping outbound nitrogen and phosphate tonnage via the Eurasian Economic Union framework. Ammonium sulphate remains comparatively less restricted.</p>
+        <p>US domestic reference prices ticked up again in the week to 18 September: <b>DAP $925/t, MAP $967/t</b>, both higher week&#8209;on&#8209;week and part of a run that has taken Indian DAP import costs up roughly <b>40% between January and May</b>. India's DAP imports over Jan&#8211;Apr fell to just <b>380,000t versus a five&#8209;year average of 1.12mt</b> &mdash; the shortfall, not the price alone, is the story.</p>
+        <p>Sulphur, the key phosphate feedstock, has reportedly spiked sharply this year as Gulf sulphur recovery streams are disrupted, forcing some phosphate producers to trim output &mdash; a secondary cost pressure layered on top of the freight and export&#8209;quota squeeze.</p>
+      </div>
+      <div>
+        <div class="tblwrap">
+          <table>
+            <tr><th>Grade / Route</th><th class="num">$/t</th></tr>
+            <tr><td>DAP, US domestic ref.</td><td class="num">925</td></tr>
+            <tr><td>MAP, US domestic ref.</td><td class="num">967</td></tr>
+            <tr><td>DAP, India CFR (recent tender)</td><td class="num">~925&#8211;930</td></tr>
+            <tr><td>DAP, East Africa FOB Duqm</td><td class="num">890s&#8211;900s</td></tr>
+          </table>
+        </div>
+        <span class="tag">China curbs: 50&#8211;80% of exports</span>
+      </div>
+    </div>
+    <div class="changed"><span class="clabel">Since last update</span><p>Maaden loaded two Duqm (Oman) cargoes in late Aug/early Sep &mdash; 60,000t to India, 55,000t to East Africa &mdash; bypassing both Hormuz and the Red Sea; freight to India runs $15&#8211;20/t cheaper via Duqm than via Red Sea ports (~$20s vs ~$40/t).</p></div>
+  </section>
+
+  <!-- 3. POTASH -->
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2 class="sec-title">Potash</h2><div class="sec-line"></div></div>
+    <div class="card">
+      <h3 class="sub">The quiet nutrient &mdash; steady, but riding the same freight tax as everything else</h3>
+      <p>US domestic MOP reference held near <b>$495/t</b> for the week to 18 September, up marginally from $494/t the prior week &mdash; the least volatile of the eight majors DTN tracks, with <b>no move of 5% or more</b> in either direction. Potash is largely insulated from the Hormuz chokepoint itself (Canadian, Belarusian and Russian supply chains don't transit the strait), but broader commentary &mdash; including from the World Bank &mdash; groups potash into the general "fertiliser prices surge on Hormuz disruption" narrative via shared ocean freight and insurance cost inflation across the fertiliser complex.</p>
+      <p>No fresh potash&#8209;specific tender or contract news out of the Gulf or South/Southeast Asia in the past 24&#8211;48 hours; treat this as the stable leg of the complex for now.</p>
+    </div>
+  </section>
+
+  <!-- 4. BANGLADESH / AUSTRALIA -->
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2 class="sec-title">Bangladesh &amp; Australia</h2><div class="sec-line"></div></div>
+    <div class="card grid-2">
+      <div>
+        <h3 class="sub">Bangladesh: financed, but structurally short on Gulf routes</h3>
+        <p>ITFC signed a <b>$3.3bn annual financing programme</b> with Bangladesh (5 July 2026, covering FY2026&#8211;27) for combined petroleum, LNG and fertiliser imports as Hormuz disruption deepens Dhaka's energy and food security exposure. Context: 1.4mt/yr of crude normally transiting Hormuz is blocked, <b>75% of Bangladesh's LNG (from Qatar) is largely halted</b>, and <b>~35% of Bangladesh's urea imports historically came from the UAE</b> &mdash; now rerouted or renegotiated.</p>
+        <p>A Saudi&#8209;Bangladesh arrangement has SABIC supplying urea via alternative routing for 2026&#8211;27, and Dhaka's cabinet committee has approved further G2G urea import deals for FY27. March&#8211;July is Bangladesh's critical Boro/Kharif application window, so timing risk on any delayed cargo remains the key operational threat, not headline price.</p>
+      </div>
+      <div>
+        <h3 class="sub">Australia: EFA underwriting widens, farmers still feeling the pinch</h3>
+        <p>Export Finance Australia's mandate was expanded (legislation amended <b>1 April 2026</b>) to underwrite fuel and fertiliser imports disrupted by lost Gulf feedstock and shipping, alongside a new critical&#8209;minerals strategic reserve (antimony, gallium, rare earths). Australia separately secured <b>90,000t of urea</b> through a government support scheme by mid&#8209;May.</p>
+        <p>More recent trade commentary suggests the Fuel and Fertiliser Security Facility is <b>drawing criticism</b> from some domestic fertiliser companies who say the support isn't reaching them as intended &mdash; a friction point worth watching if it prompts programme changes or a fresh call for import volume.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. HORMUZ / SHIPPING -->
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2 class="sec-title">Strait of Hormuz &amp; Shipping</h2><div class="sec-line"></div></div>
+    <div class="card">
+      <h3 class="sub">Market threat radar</h3>
+      <div class="radar">
+        <div class="rnode crit">
+          <div class="rname">Hormuz Blockade</div>
+          <div class="rscore">92</div>
+          <div class="rtrend up">&#9650; unchanged, extreme band</div>
+          <div class="rspark">&#9601;&#9602;&#9605;&#9606;&#9607;&#9607;&#9607;&#9607;</div>
+        </div>
+        <div class="rnode">
+          <div class="rname">War&#8209;risk Cover</div>
+          <div class="rscore">40&times;</div>
+          <div class="rtrend up" style="color:var(--elev);">&#9650; vs pre&#8209;crisis premium</div>
+          <div class="rspark">&#9601;&#9603;&#9604;&#9605;&#9606;&#9607;&#9607;&#9607;</div>
+        </div>
+        <div class="rnode">
+          <div class="rname">Ceasefire Talks</div>
+          <div class="rscore">Prelim.</div>
+          <div class="rtrend flat" style="color:var(--warn);">&#8212; UNGA proposal, no accepted framework</div>
+          <div class="rspark">&#9601;&#9602;&#9603;&#9603;&#9604;&#9603;&#9602;&#9603;</div>
+        </div>
+        <div class="rnode">
+          <div class="rname">Alt. Routes (Duqm/Red Sea)</div>
+          <div class="rscore">Active</div>
+          <div class="rtrend down" style="color:var(--bull);">&#9660; freight gap narrowing vs Hormuz-open cost</div>
+          <div class="rspark">&#9602;&#9603;&#9604;&#9605;&#9605;&#9604;&#9603;&#9602;</div>
+        </div>
+      </div>
+      <p style="margin-top:16px;">As of <b>Day 208 (25 Sep)</b>: just <b>1 vessel transited on 20 September</b> versus an 85/day pre&#8209;crisis baseline (~1% throughput); <b>376 ships</b> hold position away from berth; <b>six P&amp;I clubs have suspended coverage</b>; VLCC transit premium runs roughly <b>$10m per voyage</b>. Brent sits near <b>$105.5/bbl</b>, +46% versus the ~$72 pre&#8209;crisis baseline. CENTCOM claims escorted volumes are at a six&#8209;month high; Iran's military disputes this as "fabricated." Prediction markets price <b>under 1% odds</b> of normal Hormuz operations resuming by 30 September.</p>
+      <p>On the diplomatic track, Iran presented Washington a <b>60&#8209;day regional ceasefire and phased Hormuz reopening roadmap</b> at UNGA sidelines (23&#8211;24 Sep). Trump declined to lift the blockade absent proof of Iranian goodwill, but signalled openness to brokering Iran&#8211;Arab reconciliation, with talks potentially moving to Oman later this month. No accepted framework or reopening date exists yet.</p>
+    </div>
+    <div class="changed"><span class="clabel">Since last update</span><p>Diplomatic track advanced from Oman-mediated technical talks to a formal Iranian roadmap tabled directly with the US at UNGA &mdash; the most concrete proposal yet, but still rejected in its current form.</p></div>
+  </section>
+
+  <!-- SOURCING FLAGS -->
+  <section>
+    <div class="flagbox">
+      <div class="sec-head" style="margin-bottom:8px;"><h2 class="sec-title">Sourcing Watch &mdash; Gulf / North Africa &rarr; Australia &amp; Bangladesh</h2></div>
+      <p>Relevant to urea/TSP/DAP sourcing from <b>Saudi Arabia, Qatar, UAE, Morocco, Tunisia and Oman</b> into Australia and Bangladesh:</p>
+      <div class="route-grid">
+        <div class="route">
+          <div class="rlane">Oman &middot; Duqm reroute</div>
+          <p>Maaden is actively loading Saudi DAP through Duqm (bypassing Hormuz and the Red Sea) &mdash; $15&#8211;20/t freight saving to India/East Africa. This is the cleanest current workaround lane for Gulf&#8209;origin phosphate; worth checking Duqm slot availability for AU/BD cargo.</p>
+        </div>
+        <div class="route">
+          <div class="rlane">UAE &middot; urea, rerouted</div>
+          <p>~35% of Bangladesh's historical urea supply came from the UAE. SABIC (Saudi) is stepping into that gap for 2026&#8211;27 under a bilateral deal &mdash; a signal that direct UAE-origin urea contracts may face continued routing friction.</p>
+        </div>
+        <div class="route">
+          <div class="rlane">Morocco &middot; OCP gaining share</div>
+          <p>OCP is a net beneficiary of Gulf disruption, absorbing displaced phosphate demand. Non&#8209;Hormuz origin makes Morocco a lower&#8209;risk TSP/DAP counterparty for both Australian and Bangladeshi buyers right now, though OCP maintenance schedules are a watch item.</p>
+        </div>
+        <div class="route">
+          <div class="rlane">Qatar &middot; LNG-linked exposure</div>
+          <p>Qatari LNG production curtailment (feeding Bangladesh's gas/urea feedstock chain) is the bigger indirect risk here versus direct fertiliser export &mdash; watch feedstock gas availability at Qatari nitrogen plants.</p>
+        </div>
+        <div class="route">
+          <div class="rlane">Tunisia &middot; capacity building, not yet a swing supplier</div>
+          <p>GCT is investing in phosphate output/exports under its 2026&#8211;2030 plan and drew fresh financing this year, but Hormuz&#8209;linked input disruption is still constraining near&#8209;term production &mdash; a 2027+ story more than a spot&#8209;cargo one today.</p>
+        </div>
+        <div class="route">
+          <div class="rlane">Saudi Arabia &middot; formula pricing, Duqm-first</div>
+          <p>Saudi (Maaden/SABIC) cargo is increasingly formula&#8209;priced and Duqm&#8209;routed rather than spot Hormuz transits. Direct Hormuz transits of Saudi phosphate remain rare &mdash; only two confirmed since hostilities began in late February.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div>Fertiliser Trade Morning Brief &middot; compiled from public reporting, 24&#8211;48h lookback &middot; not investment advice</div>
+    <div>Next issue: tomorrow, 07:00 AEST</div>
+  </footer>
+
+  <details class="sources">
+    <summary>Sources (14)</summary>
+    <ol>
+      <li><a href="https://www.fertilizerdaily.com/20260909-urea-price-443-september-2026-hormuz-china/" target="_blank">Fertilizer Daily &mdash; Urea eases to $443/t as Hormuz talks and China export surge quiet fears</a></li>
+      <li><a href="https://discoveryalert.com/analysis/china-urea-exports-quota-global-nitrogen-september-2026/" target="_blank">Discovery Alert &mdash; How China's urea export quota moves global nitrogen prices</a></li>
+      <li><a href="https://www.dtnpf.com/agriculture/web/ag/crops/article/2026/09/23/fertilizer-prices-rise-six-eight" target="_blank">DTN &mdash; Fertilizer prices rise for six of eight major fertilizers (w/e 18 Sep 2026)</a></li>
+      <li><a href="https://www.dtnpf.com/agriculture/web/ag/crops/article/2026/09/16/fertilizer-prices-continue-lower-6-8" target="_blank">DTN &mdash; Fertilizer prices continue lower for six of eight (w/e 11 Sep 2026)</a></li>
+      <li><a href="https://www.fertilizerdaily.com/20260729-china-phosphate-export-restrictions-august-2026-russia-quotas/" target="_blank">Fertilizer Daily &mdash; China extends phosphate export curbs through August 2026</a></li>
+      <li><a href="https://discoveryalert.com/dap-export-crisis-saudi-arabia-duqm-oman-hormuz-2026/" target="_blank">Discovery Alert &mdash; Maaden routes DAP exports through Oman's Duqm port</a></li>
+      <li><a href="https://discoveryalert.com/phosphate-fertiliser-hormuz-disruption-food-security-2026/" target="_blank">Discovery Alert &mdash; Second Saudi phosphates cargo transits Hormuz in 2026</a></li>
+      <li><a href="https://blogs.worldbank.org/en/opendata/fertilizer-prices-surge-as-strait-of-hormuz-disruptions-tighten-" target="_blank">World Bank &mdash; Fertilizer prices surge as Hormuz disruptions tighten supplies</a></li>
+      <li><a href="https://www.tradefinanceglobal.com/posts/itfc-signs-3-3bn-financing-program-with-bangladesh-as-hormuz-driven-energy-and-food-crises-deepen" target="_blank">Trade Finance Global &mdash; ITFC signs $3.3bn financing programme with Bangladesh</a></li>
+      <li><a href="https://www.gtreview.com/news/asia/export-finance-australia-to-underwrite-fuel-fertiliser-imports-amid-hormuz-crisis/" target="_blank">GTR &mdash; Export Finance Australia to underwrite fuel, fertiliser imports amid Hormuz crisis</a></li>
+      <li><a href="https://www.graincentral.com/news/ffsf-under-fire-as-some-fertiliser-companies-feel-the-cold/" target="_blank">Grain Central &mdash; FFSF under fire as some fertiliser companies feel the cold</a></li>
+      <li><a href="https://straits.live/" target="_blank">Straits Live &mdash; Strait of Hormuz status tracker (Day 208, 25 Sep 2026)</a></li>
+      <li><a href="https://straits.live/briefs/2026-09-19" target="_blank">Straits Live &mdash; Strait of Hormuz Daily Brief, 19 Sep 2026</a></li>
+      <li><a href="https://www.thenationalnews.com/news/mena/2026/09/23/iran-us-meeting-new-york/" target="_blank">The National &mdash; Iran presents US with roadmap for regionwide ceasefire and Hormuz reopening</a></li>
+    </ol>
+  </details>
+
+</div>
