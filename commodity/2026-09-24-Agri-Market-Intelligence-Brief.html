@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>24 Sep 2026 · Agri-Market Intelligence Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0D0B08; --panel:#17130E; --panel2:#211911; --border:#2A2219;
+    --gold:#CBA56A; --bull:#57D38C; --warn:#E9B554; --elev:#FF9E4A; --crit:#FF5A4D; --macro:#5DA9FF;
+    --ink:#EFE7D8; --mut:#9C927F;
+    --serif:'Fraunces',Georgia,serif;
+    --sans:'IBM Plex Sans',system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+    --display:'Playfair Display',Georgia,serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--ink);font-family:var(--sans);line-height:1.55;
+    -webkit-font-smoothing:antialiased;padding:0 16px}
+  .wrap{max-width:940px;margin:0 auto;padding:40px 0 64px}
+  .num{font-family:var(--mono);font-variant-numeric:tabular-nums;font-feature-settings:"tnum"}
+
+  /* Masthead */
+  .mast{border-bottom:1px solid var(--border);padding-bottom:22px;margin-bottom:26px}
+  .kicker{font-family:var(--sans);font-size:11px;font-weight:700;letter-spacing:3px;
+    text-transform:uppercase;color:var(--gold)}
+  .mast h1{font-family:var(--display);font-weight:900;font-size:clamp(34px,6vw,52px);
+    line-height:1.08;margin:10px 0 6px;color:#F6EFE0}
+  .mast .sub{font-family:var(--serif);font-size:16px;color:var(--mut);font-weight:400}
+  .meta{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px 18px;font-family:var(--mono);
+    font-size:12px;color:var(--mut);letter-spacing:.5px}
+  .meta b{color:var(--ink);font-weight:600}
+
+  /* KPI strip */
+  .kpis{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:0 0 30px}
+  .kpi{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--border);
+    border-radius:10px;padding:12px 12px 11px}
+  .kpi .lab{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold)}
+  .kpi .val{font-family:var(--mono);font-size:19px;font-weight:600;margin-top:6px;letter-spacing:-.5px}
+  .kpi .chg{font-family:var(--mono);font-size:12px;font-weight:600;margin-top:3px}
+  .up{color:var(--bull)} .down{color:var(--crit)} .flat{color:var(--mut)}
+
+  /* Section label */
+  .seclab{font-size:13px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;
+    color:var(--gold);margin:34px 0 14px;display:flex;align-items:center;gap:12px}
+  .seclab::after{content:"";flex:1;height:1px;background:var(--border)}
+
+  /* News items */
+  .item{background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--gold);
+    border-radius:10px;padding:18px 20px;margin-bottom:14px;transition:transform .15s ease,box-shadow .15s ease}
+  .item:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(0,0,0,.45)}
+  .item.b{border-left-color:var(--bull)} .item.br{border-left-color:var(--crit)}
+  .item.n{border-left-color:var(--macro)}
+  .tagrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-bottom:8px}
+  .flag{font-size:12.5px;font-weight:700;letter-spacing:.3px;color:var(--ink)}
+  .chip{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;
+    padding:3px 8px;border-radius:20px;border:1px solid var(--border);color:var(--mut)}
+  .chip.bull{color:var(--bull);border-color:rgba(87,211,140,.4);background:rgba(87,211,140,.08)}
+  .chip.bear{color:var(--crit);border-color:rgba(255,90,77,.4);background:rgba(255,90,77,.08)}
+  .chip.watch{color:var(--warn);border-color:rgba(233,181,84,.4);background:rgba(233,181,84,.08)}
+  .chip.mac{color:var(--macro);border-color:rgba(93,169,255,.4);background:rgba(93,169,255,.08)}
+  .item h3{font-family:var(--serif);font-weight:600;font-size:19px;line-height:1.25;margin-bottom:8px;color:#F3ECDD}
+  .item p{font-size:14.5px;color:#D8CFBE;margin-bottom:10px}
+  .item p b{color:#F6EFE0;font-weight:700}
+  .imp{font-size:14px;color:var(--ink);background:var(--panel2);border:1px solid var(--border);
+    border-radius:8px;padding:10px 12px}
+  .imp b{color:var(--gold)}
+  .src{font-family:var(--mono);font-size:11px;margin-top:9px;color:var(--mut)}
+  .src a{color:var(--gold);text-decoration:none;border-bottom:1px dotted rgba(203,165,106,.5)}
+  .src a:hover{color:#E7C98C}
+
+  /* AUD gauge */
+  .fxbox{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--border);
+    border-radius:12px;padding:20px 22px}
+  .fxtop{display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px}
+  .fxtop .big{font-family:var(--mono);font-size:30px;font-weight:600;letter-spacing:-1px}
+  .fxtop .pos{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--warn)}
+  .track{position:relative;height:8px;border-radius:6px;margin:26px 0 8px;
+    background:linear-gradient(90deg,#3a2e1f,var(--gold))}
+  .marker{position:absolute;top:50%;width:16px;height:16px;border-radius:50%;background:#F6EFE0;
+    border:3px solid var(--gold);transform:translate(-50%,-50%);box-shadow:0 0 12px rgba(203,165,106,.7)}
+  .scale{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--mut)}
+  .fxrow{display:flex;flex-wrap:wrap;gap:18px;margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
+  .fxrow div{font-family:var(--mono);font-size:12px;color:var(--mut)}
+  .fxrow b{display:block;color:var(--ink);font-size:15px;font-weight:600;margin-top:2px}
+
+  /* Pulse summary */
+  .pulse{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:22px 24px}
+  .pulse h2{font-family:var(--serif);font-weight:600;font-size:22px;color:#F3ECDD;margin-bottom:4px}
+  .pulse .lead{font-size:14px;color:var(--mut);margin-bottom:16px}
+  .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .pcard{background:var(--panel2);border:1px solid var(--border);border-radius:9px;padding:14px 15px}
+  .pcard .h{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+  .pcard .h span{font-weight:700;font-size:14px;color:#F3ECDD}
+  .pcard p{font-size:13px;color:#D2C9B8;line-height:1.5}
+  .pcard p b{color:#F6EFE0}
+  .takeaway{margin-top:16px;background:linear-gradient(90deg,rgba(203,165,106,.12),transparent);
+    border:1px solid rgba(203,165,106,.3);border-left:3px solid var(--gold);border-radius:8px;padding:13px 15px}
+  .takeaway .l{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+  .takeaway p{font-size:14px;color:var(--ink)}
+  .takeaway p b{color:#F6EFE0}
+
+  footer{margin-top:38px;padding-top:18px;border-top:1px solid var(--border);
+    font-size:11.5px;color:var(--mut);line-height:1.6}
+  footer b{color:var(--mut)}
+
+  @media(max-width:720px){
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .pgrid{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- MASTHEAD -->
+  <header class="mast">
+    <div class="kicker">Global Agri-Market Intelligence · Melbourne Desk</div>
+    <h1>Agri-Market Intelligence Brief</h1>
+    <div class="sub">Grain, oilseed &amp; pulse signals for the Australian trade — 48-hour read</div>
+    <div class="meta">
+      <span><b>Thursday 24 September 2026</b> · 10:40 AEST</span>
+      <span>Coverage window: <b>22–24 Sep</b></span>
+      <span>7 items + pulse cross-market note</span>
+    </div>
+  </header>
+
+  <!-- KPI STRIP -->
+  <div class="kpis">
+    <div class="kpi">
+      <div class="lab">ASX Wheat Jan</div>
+      <div class="val">A$363</div>
+      <div class="chg up">▲ +A$13 wk</div>
+    </div>
+    <div class="kpi">
+      <div class="lab">CBOT Wheat Dec</div>
+      <div class="val">~US$7.13</div>
+      <div class="chg down">▼ 9.5–13.25c</div>
+    </div>
+    <div class="kpi">
+      <div class="lab">Canola WCE Nov</div>
+      <div class="val">A$828</div>
+      <div class="chg down">▼ A$11.63</div>
+    </div>
+    <div class="kpi">
+      <div class="lab">Barley (W) Albany</div>
+      <div class="val">A$326</div>
+      <div class="chg flat">■ softer</div>
+    </div>
+    <div class="kpi">
+      <div class="lab">AUD/USD</div>
+      <div class="val">0.7115</div>
+      <div class="chg flat">■ steady</div>
+    </div>
+  </div>
+
+  <!-- NEWS ITEMS -->
+  <div class="seclab">The Brief · 7 Signals</div>
+
+  <!-- 1 -->
+  <article class="item bear">
+    <div class="tagrow">
+      <span class="flag">🇦🇺 Australia</span>
+      <span class="chip">Supply</span>
+      <span class="chip bear">Bearish basis</span>
+    </div>
+    <h3>ABARES lifts winter crop to 53.6Mt — big upward revisions across the board</h3>
+    <p>ABARES raised its national winter crop forecast to <b>53.6Mt</b>: <b>wheat 29.9Mt</b> (+12% on June), <b>barley 16.4Mt</b> (+16%) and <b>canola 7.27Mt</b> (+17%). A wetter-than-expected south-east and softer fertiliser drag did the lifting; SA and Vic are running 3–4 weeks ahead, while northern NSW and Qld stay poor.</p>
+    <div class="imp">👉 <b>Implication:</b> A larger exportable surplus pressures domestic basis into harvest — lean bearish on old-crop longs and price new-crop wheat/barley on rallies rather than holding for scarcity.</div>
+    <div class="src">Source: <a href="https://www.graincentral.com/news/souths-kind-winter-lifts-abares-wheat-barley-canola-figures/">Grain Central</a> · 1 Sep 2026</div>
+  </article>
+
+  <!-- 2 -->
+  <article class="item bear">
+    <div class="tagrow">
+      <span class="flag">🇷🇺 Russia / 🇺🇦 Ukraine</span>
+      <span class="chip">Policy · Black Sea</span>
+      <span class="chip bear">Bearish wheat</span>
+    </div>
+    <h3>Russia zeroes export duties through December, adds 3Mt intervention buying</h3>
+    <p>Russia scrapped export duties on <b>wheat, barley and corn</b> through December and flagged a <b>3Mt intervention purchase</b> program; Russian cash wheat sat flat at <b>US$210</b>. Ukraine wrapped its season at 33Mt wheat with barley exports down 41% YoY.</p>
+    <div class="imp">👉 <b>Implication:</b> Cheap, duty-free Russian supply caps world wheat and undercuts Australian FOB into Asia/MENA — a headwind for holding wheat length; sell into any Black-Sea-driven spikes.</div>
+    <div class="src">Source: <a href="https://www.graincentral.com/markets/daily-market-wire-23-september-2026/">Grain Central — Daily Market Wire</a> · 23 Sep 2026</div>
+  </article>
+
+  <!-- 3 -->
+  <article class="item b">
+    <div class="tagrow">
+      <span class="flag">🇵🇰 Pakistan</span>
+      <span class="chip">Demand · Imports</span>
+      <span class="chip bull">Bullish demand</span>
+    </div>
+    <h3>Pakistan turns wheat importer — 750kt tender, then a fresh 185kt float</h3>
+    <p>Facing thin farmer selling at harvest, Pakistan's TCP tendered for up to <b>750,000t</b> of wheat (nine bids for 656,000t, lowest at <b>US$348.83/t</b>) and floated a further <b>185,000t</b> tender on 21 Sep. It's a regional buyer re-emerging mid-season.</p>
+    <div class="imp">👉 <b>Implication:</b> New subcontinent import demand is a rare bullish offset for wheat — watch whether Australian/Black Sea origins win cargoes; supportive for keeping some export-grade wheat unpriced.</div>
+    <div class="src">Source: <a href="https://tribune.com.pk/story/2628476/tcp-floats-tender-for-750000-tonnes-of-wheat">Express Tribune</a> · <a href="https://www.nation.com.pk/21-Sep-2026/tcp-floats-int-l-tender-purchase-185-000-metric-tons-wheat">The Nation</a> · 9–21 Sep 2026</div>
+  </article>
+
+  <!-- 4 -->
+  <article class="item">
+    <div class="tagrow">
+      <span class="flag">🇨🇦 Canada</span>
+      <span class="chip">Oilseeds · Supply</span>
+      <span class="chip watch">Hold canola</span>
+    </div>
+    <h3>Record Canadian canola meets a friendlier China and firm biofuel pull</h3>
+    <p>Canada's <b>canola</b> acreage hit a historic record for 2026, and China's earlier cut to its anti-dumping duty on Canadian seed has reopened that channel. Structural biofuel demand keeps a floor under the complex even as ample supply builds.</p>
+    <div class="imp">👉 <b>Implication:</b> Big Canadian tonnage competes head-on with Australian canola into the EU/Asia, but biodiesel demand limits downside — favour <b>hold</b> over aggressive selling and use crude-led dips to add cover.</div>
+    <div class="src">Source: <a href="https://www.topcropmanager.com/canadas-canola-acreage-hits-historic-record-in-2026/">Top Crop Manager</a> · <a href="https://www.realagriculture.com/2026/03/china-slashes-anti-dumping-tariff-on-canadian-canola-seed/">RealAgriculture</a></div>
+  </article>
+
+  <!-- 5 -->
+  <article class="item">
+    <div class="tagrow">
+      <span class="flag">🌐 Global oilseeds</span>
+      <span class="chip">Prices</span>
+      <span class="chip watch">Buy dips</span>
+    </div>
+    <h3>Canola retreats with crude — but the biofuel bid stays intact</h3>
+    <p>Canola followed energy lower: <b>WCE Nov26</b> −A$11.63 to <b>A$828.28</b> and <b>Matif Nov26</b> −A$7.37 to <b>A$892.25</b>, even as local WA bids firmed to <b>A$888</b> (east A$830). Matif maize jumped €7.25 to €276, now €32 over Matif wheat.</p>
+    <div class="imp">👉 <b>Implication:</b> The pullback is crude-driven, not demand-driven. For Australian CAN1 sellers, treat the dip as tactical — scale-price rather than dump; strong local bids signal exporters still chasing tonnes.</div>
+    <div class="src">Source: <a href="https://www.graincentral.com/markets/daily-market-wire-23-september-2026/">Grain Central — Daily Market Wire</a> · 23 Sep 2026</div>
+  </article>
+
+  <!-- 6 -->
+  <article class="item br">
+    <div class="tagrow">
+      <span class="flag">🇮🇳 India</span>
+      <span class="chip">Policy · Pulses</span>
+      <span class="chip bear">Bearish pulses</span>
+    </div>
+    <h3>India keeps the import taps open — duty-free peas &amp; urad to March 2027</h3>
+    <p>India extended <b>duty-free imports of yellow peas and black gram (urad) to 31 March 2027</b>, scrapping minimum-price and port limits on peas, while <b>chickpeas</b> still carry a 10% duty. Desi chickpea CNF has been easing toward <b>US$450–470/t</b> on heavy global supply.</p>
+    <div class="imp">👉 <b>Implication:</b> Cheap substitute imports cap Indian pulse values and pressure Australian desi chickpea/faba prices — forward-sell into firm windows and lean on lentils, where South-Asian demand holds better.</div>
+    <div class="src">Source: <a href="https://www.downtoearth.org.in/agriculture/centre-extends-duty-free-imports-of-yellow-peas-and-black-gram-until-march-2027-to-curb-rising-pulse-prices">Down To Earth</a> · <a href="https://ukragroconsult.com/en/news/chickpea-market-is-expected-to-experience-increased-competition-in-asia-amid-high-supply/">UkrAgroConsult</a></div>
+  </article>
+
+  <!-- 7 -->
+  <article class="item n">
+    <div class="tagrow">
+      <span class="flag">💱 Forex</span>
+      <span class="chip mac">Macro · FX</span>
+      <span class="chip mac">Margin watch</span>
+    </div>
+    <h3>AUD/USD steady at 0.7115 as RBA–Fed tug-of-war holds the range</h3>
+    <p>The Aussie held <b>0.7115</b> against a soft US dollar, keeping it in the upper part of its multi-month band. A firmer AUD trims the local-currency value of USD-denominated grain and pulse sales.</p>
+    <div class="imp">👉 <b>Implication:</b> With AUD in the upper range, consider layering forward FX cover on unsold export tonnage; a break higher on Fed easing would compress margins further — hedge, don't hope.</div>
+    <div class="src">Source: <a href="https://www.graincentral.com/markets/daily-market-wire-23-september-2026/">Grain Central</a> · <a href="https://www.forex.com/en-us/news-and-analysis/australian-dollar-outlook-aud-usd-faces-rba-fed-rate-tug-of-war/">FOREX.com</a></div>
+  </article>
+
+  <!-- AUD GAUGE -->
+  <div class="seclab">AUD Position</div>
+  <div class="fxbox">
+    <div class="fxtop">
+      <div><span class="num big">0.7115</span> &nbsp;<span style="color:var(--mut);font-size:13px">AUD/USD</span></div>
+      <div class="pos">Upper range · hedge bias</div>
+    </div>
+    <div class="track"><div class="marker" style="left:72%"></div></div>
+    <div class="scale"><span>0.6350 · 52w low</span><span>0.7300 · 52w high</span></div>
+    <div class="fxrow">
+      <div>Spot <b class="num">0.7115</b></div>
+      <div>~50D avg <b class="num">0.702</b></div>
+      <div>~200D avg <b class="num">0.688</b></div>
+      <div>Range position <b class="num">≈72%</b></div>
+    </div>
+  </div>
+
+  <!-- PULSE CROSS-MARKET -->
+  <div class="seclab">Special · Pulse Trade Cross-Check</div>
+  <div class="pulse">
+    <h2>Pulses: subcontinent demand vs record Southern-Hemisphere supply</h2>
+    <p class="lead">Australia · India · Pakistan · Bangladesh — checked against Canadian competition and crop production.</p>
+    <div class="pgrid">
+      <div class="pcard">
+        <div class="h">🇦🇺 <span>Australia</span></div>
+        <p>Heading into another <b>large pulse crop</b> (chickpeas ~2.5Mt class, big lentil program). India and Pakistan are the anchor buyers; desi <b>chickpea</b> and faba values are softening as global supply builds, while <b>lentils</b> hold firmer on steadier South-Asian pull.</p>
+      </div>
+      <div class="pcard">
+        <div class="h">🇮🇳 <span>India</span></div>
+        <p>Policy is the market-mover: <b>duty-free yellow peas &amp; urad to Mar-2027</b>, 10% chickpea duty retained. Cheap peas substitute for chana, capping desi <b>chickpea</b> prices; importers eye CNF <b>$450–470/t</b>. Bearish tilt for supplier netbacks.</p>
+      </div>
+      <div class="pcard">
+        <div class="h">🇵🇰 Pakistan / 🇧🇩 Bangladesh</div>
+        <p>Pakistan is short — importing <b>wheat</b> and a steady chickpea/lentil buyer; lower Indian prices drag Pakistani values too. <b>Bangladesh</b> remains a reliable lentil/pea destination, a useful diversification outlet away from India-only risk.</p>
+      </div>
+      <div class="pcard">
+        <div class="h">🇨🇦 <span>Canada — the competitor</span></div>
+        <p>Record <b>canola</b> and a large pulse program (peas, lentils) keep Canada shipping aggressively into the same Asian lanes. Its harvest finishes ahead of Australia's, so Canadian offers set the early price floor buyers quote back to Aussie exporters.</p>
+      </div>
+    </div>
+    <div class="takeaway">
+      <div class="l">Net read for the desk</div>
+      <p>Supply is winning the narrative: <b>record Australian and Canadian output + open Indian import policy = bearish pressure on desi chickpeas and peas</b>. <b>Lentils</b> are the relative safe harbour on durable South-Asian demand. Action: forward-sell chickpeas/faba into strength, diversify beyond India toward Pakistan &amp; Bangladesh, and watch for any Indian chickpea-duty change as the key bullish swing factor.</p>
+    </div>
+  </div>
+
+  <footer>
+    <b>Sources:</b> Grain Central (Daily Market Wire 23 Sep; ABARES coverage), Express Tribune &amp; The Nation (Pakistan TCP tenders), Down To Earth &amp; UkrAgroConsult (India pulse policy / chickpea supply), Top Crop Manager &amp; RealAgriculture (Canada canola), FOREX.com (AUD outlook), Western Producer / Saskatchewan Pulse Growers (pulse crop context).<br><br>
+    Prepared by the Melbourne Global Agri-Market Intelligence desk · 24 Sep 2026. Figures are latest available at time of writing and move intraday; verify against live broker/exchange quotes before trading. Not financial advice.
+  </footer>
+
+</div>
+</body>
+</html>
