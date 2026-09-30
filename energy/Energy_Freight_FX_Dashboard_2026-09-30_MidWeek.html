@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Grain Desk Energy Brief</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,900&family=Playfair+Display:wght@700;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: single 1240px column of stacked intelligence panels; KPI strip → hero chart → 2-col signal cards → radar → tables → executive insight. Dark-first trading desk (CIDS). */
+:root{
+  color-scheme:dark;
+  --bg:#0D0B08; --panel:#17130E; --panel2:#211911; --border:#2A2219; --border2:#3A2F22;
+  --fg:#F1EADF; --fg2:#B8AC99; --fg3:#7E7365;
+  --gold:#CBA56A; --gold2:#E3C88F;
+  --bull:#57D38C; --warn:#E9B554; --elev:#FF9E4A; --crit:#FF5A4D; --macro:#5DA9FF;
+  --insight-bg:#F5F2EC; --insight-fg:#1B1712; --insight-fg2:#5B5347; --insight-line:#DDD5C7;
+  --shadow:0 10px 30px rgba(0,0,0,.45);
+  --font-display:'Fraunces',Georgia,serif; --font-hero:'Playfair Display',Georgia,serif;
+  --font-body:'IBM Plex Sans',system-ui,sans-serif; --font-mono:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+  --grid:rgba(203,165,106,.08);
+}
+@media (prefers-color-scheme: light){ :root:not([data-theme="dark"]){
+  color-scheme:light;
+  --bg:#F3EFE7; --panel:#FFFDF9; --panel2:#F6F1E8; --border:#E2D9CA; --border2:#CDBFA9;
+  --fg:#1C1712; --fg2:#584E42; --fg3:#8A7E6E; --gold:#9A7434; --gold2:#7E5E28;
+  --bull:#1E9A5A; --warn:#B7841A; --elev:#D9711A; --crit:#D8392E; --macro:#1F6FD0;
+  --shadow:0 10px 30px rgba(60,40,10,.14); --grid:rgba(120,90,40,.10);
+}}
+:root[data-theme="light"]{
+  color-scheme:light;
+  --bg:#F3EFE7; --panel:#FFFDF9; --panel2:#F6F1E8; --border:#E2D9CA; --border2:#CDBFA9;
+  --fg:#1C1712; --fg2:#584E42; --fg3:#8A7E6E; --gold:#9A7434; --gold2:#7E5E28;
+  --bull:#1E9A5A; --warn:#B7841A; --elev:#D9711A; --crit:#D8392E; --macro:#1F6FD0;
+  --shadow:0 10px 30px rgba(60,40,10,.14); --grid:rgba(120,90,40,.10);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font-body);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding-inline:clamp(16px,3vw,32px);padding-block:20px 60px;display:grid;gap:22px}
+h1,h2,h3{margin:0;text-wrap:balance}
+.eyebrow{font-family:var(--font-body);font-size:13px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold)}
+.mono,.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:22px;transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;min-width:0}
+.card:hover{transform:translateY(-4px);box-shadow:var(--shadow);border-color:var(--border2)}
+.card-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.card-head .sub{font-size:13px;color:var(--fg3)}
+.up{color:var(--crit)} .down{color:var(--bull)} .flat{color:var(--warn)}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:999px;font-family:var(--font-mono);font-size:12px;font-weight:600;border:1px solid var(--border2);background:var(--panel2);color:var(--fg2)}
+.chip.gold{border-color:var(--gold);color:var(--gold)} .chip.crit{border-color:var(--crit);color:var(--crit)} .chip.bull{border-color:var(--bull);color:var(--bull)} .chip.macro{border-color:var(--macro);color:var(--macro)} .chip.warn{border-color:var(--warn);color:var(--warn)}
+a{color:var(--gold)}
+/* masthead */
+.mast{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;border-bottom:1px solid var(--border);padding-bottom:16px}
+.mast .brand{font-family:var(--font-display);font-weight:900;font-size:clamp(24px,3.4vw,34px);letter-spacing:-.01em;line-height:1.05}
+.mast .brand span{color:var(--gold)}
+.mast .meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-family:var(--font-mono);font-size:12px;color:var(--fg2)}
+.live{display:inline-flex;align-items:center;gap:6px}.live i{width:8px;height:8px;border-radius:50%;background:var(--bull);box-shadow:0 0 0 0 var(--bull);animation:ping 1.8s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(87,211,140,.6)}100%{box-shadow:0 0 0 10px rgba(87,211,140,0)}}
+/* alert */
+.alert{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;border:1px solid var(--warn);background:linear-gradient(90deg,rgba(233,181,84,.16),rgba(233,181,84,.04));border-radius:12px;padding:14px 18px;animation:alertpulse 2.6s ease-in-out infinite}
+@keyframes alertpulse{0%,100%{box-shadow:0 0 0 0 rgba(233,181,84,.0)}50%{box-shadow:0 0 22px 0 rgba(233,181,84,.35)}}
+.alert .tag{font-family:var(--font-mono);font-weight:700;font-size:12px;letter-spacing:2px;color:var(--warn);border:1px solid var(--warn);padding:4px 8px;border-radius:6px;white-space:nowrap}
+.alert .msg{font-size:15px}.alert .msg b{color:var(--fg)}
+.alert .stat{font-family:var(--font-mono);font-size:12px;color:var(--fg2);text-align:right;white-space:nowrap}
+@media (max-width:640px){.alert{grid-template-columns:1fr}.alert .stat{text-align:left}}
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media (max-width:820px){.kpis{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){.kpis{grid-template-columns:1fr}}
+.kpi{position:relative;overflow:hidden;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:14px 14px 12px 18px;transition:transform .22s ease,box-shadow .22s ease;min-width:0}
+.kpi:hover{transform:translateY(-4px);box-shadow:var(--shadow)}
+.kpi::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--sev,var(--gold))}
+.kpi .lbl{font-family:var(--font-mono);font-size:11px;letter-spacing:1.6px;text-transform:uppercase;color:var(--fg3)}
+.kpi .val{font-family:var(--font-mono);font-weight:700;font-size:clamp(22px,2.3vw,28px);line-height:1.15;margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi .val small{font-size:12px;color:var(--fg3);font-weight:500;margin-left:3px}
+.kpi .chg{font-family:var(--font-mono);font-size:12px;font-weight:600;margin-top:4px;display:flex;gap:8px;flex-wrap:wrap}
+.kpi .chg span{white-space:nowrap}
+.kpi .note{font-size:11px;color:var(--fg3);margin-top:3px}
+/* grids */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+@media (max-width:900px){.two{grid-template-columns:1fr}}
+/* hero chart */
+.chart-wrap{position:relative;width:100%}
+.chart-wrap svg{width:100%;height:auto;display:block}
+.chart-legend{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--font-mono);font-size:12px;color:var(--fg2)}
+.chart-legend i{display:inline-block;width:18px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+.tip{position:absolute;pointer-events:none;background:var(--panel2);border:1px solid var(--border2);border-radius:8px;padding:8px 10px;font-family:var(--font-mono);font-size:12px;color:var(--fg);box-shadow:var(--shadow);opacity:0;transform:translate(-50%,-110%);transition:opacity .15s;white-space:nowrap;z-index:5}
+.tip.on{opacity:1}
+/* bias */
+.bias{display:grid;grid-template-columns:1fr;gap:16px;align-items:center}
+.strip{position:relative;height:14px;border-radius:999px;background:linear-gradient(90deg,var(--bull),var(--warn) 50%,var(--crit));margin:22px 0 6px}
+.strip .knob{position:absolute;top:50%;width:22px;height:22px;border-radius:50%;background:var(--fg);border:3px solid var(--bg);transform:translate(-50%,-50%);box-shadow:0 0 0 3px var(--gold),0 0 18px rgba(203,165,106,.7)}
+.strip-lbl{display:flex;justify-content:space-between;font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg3)}
+.signal{font-family:var(--font-display);font-weight:900;font-size:clamp(32px,4vw,40px);letter-spacing:.06em;text-transform:uppercase;color:var(--elev);text-shadow:0 0 18px rgba(255,158,74,.55),0 0 40px rgba(255,158,74,.25);animation:sigpulse 2.5s ease-in-out infinite;display:inline-block;transform-origin:left center}
+.signal.bear{color:var(--bull);text-shadow:0 0 18px rgba(87,211,140,.5),0 0 40px rgba(255,158,74,.25)}
+@keyframes sigpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.gauge{width:100%;max-width:340px;margin:0 auto;display:block}
+.gauge .needle{transform-origin:160px 150px;animation:needle 4s ease-in-out infinite}
+@keyframes needle{0%,100%{transform:rotate(var(--ang))}50%{transform:rotate(calc(var(--ang) + 3deg))}}
+.bias-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.bias-facts>div{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.bias-facts .k{font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg3)}
+.bias-facts .v{font-family:var(--font-display);font-weight:600;font-size:18px;margin-top:2px}
+@media (max-width:520px){.bias-facts{grid-template-columns:1fr}}
+/* cost pressure */
+.cp{display:flex;flex-direction:column;justify-content:center;min-height:100%}
+.cp-rows{display:grid;gap:14px}
+.cp-row{display:grid;grid-template-columns:150px 1fr 82px;gap:12px;align-items:center;position:relative}
+@media (max-width:520px){.cp-row{grid-template-columns:110px 1fr 70px}}
+.cp-row .name{font-family:var(--font-display);font-weight:700;font-size:16px;line-height:1.15}
+.cp-row .name small{display:block;font-family:var(--font-mono);font-weight:400;font-size:10.5px;color:var(--fg3);letter-spacing:.5px;text-transform:uppercase}
+.cp-track{height:20px;border-radius:999px;background:var(--panel2);border:1px solid var(--border);overflow:hidden;position:relative}
+.cp-track .fill{height:100%;width:0;border-radius:999px;background:var(--c);transition:width 1.2s cubic-bezier(.2,.8,.2,1);box-shadow:inset 0 -4px 8px rgba(0,0,0,.18)}
+.cp-row:hover .cp-track .fill{filter:brightness(1.15)}
+.cp-row:hover .cp-track{transform:scaleY(1.18)}
+.cp-track{transition:transform .2s}
+.cp-row .pct{font-family:var(--font-mono);font-weight:700;font-size:18px;text-align:right}
+.cp-row .tt{position:absolute;left:0;top:-8px;transform:translateY(-100%);background:var(--panel2);border:1px solid var(--border2);border-radius:8px;padding:8px 10px;font-size:12px;line-height:1.4;color:var(--fg2);width:min(320px,80vw);opacity:0;pointer-events:none;transition:opacity .15s;z-index:4;box-shadow:var(--shadow)}
+.cp-row:hover .tt{opacity:1}
+.cp-row .tt b{color:var(--fg);font-family:var(--font-mono)}
+@media (max-width:520px){.cp-row .tt{left:0}}
+/* fx thermometer */
+.therm{position:relative;height:26px;border-radius:999px;background:linear-gradient(90deg,var(--bull),var(--gold) 55%,var(--elev));margin:56px 0 44px}
+.therm .tick{position:absolute;top:-8px;bottom:-8px;width:2px;background:var(--fg);opacity:.75;transform:translateX(-50%)}
+.therm .tick span{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-size:10px;letter-spacing:1px;color:var(--fg2);white-space:nowrap}
+.therm .tick.below span{top:auto;bottom:-22px}
+.therm .tick.start span{left:0;transform:none}
+.therm .tick.end span{left:auto;right:0;transform:none}
+.therm .cur{position:absolute;top:50%;width:26px;height:26px;border-radius:50%;background:var(--fg);border:4px solid var(--bg);transform:translate(-50%,-50%);box-shadow:0 0 0 3px var(--gold),0 0 22px rgba(203,165,106,.9);animation:fxpulse 2s ease-in-out infinite;cursor:default}
+@keyframes fxpulse{0%,100%{box-shadow:0 0 0 3px var(--gold),0 0 16px rgba(203,165,106,.6)}50%{box-shadow:0 0 0 5px var(--gold),0 0 32px rgba(203,165,106,1)}}
+.therm .cur span{position:absolute;top:-52px;left:50%;transform:translateX(-50%);font-family:var(--font-mono);font-weight:700;font-size:13px;color:var(--gold2);white-space:nowrap}
+.therm .cur .tt{position:absolute;top:32px;left:auto;right:-12px;background:var(--panel2);border:1px solid var(--border2);border-radius:8px;padding:8px 10px;font-size:12px;color:var(--fg2);white-space:normal;width:min(300px,76vw);line-height:1.45;opacity:0;transition:opacity .15s;z-index:4;font-family:var(--font-mono)}
+.therm .cur:hover .tt{opacity:1}
+.therm-ends{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-family:var(--font-mono);font-size:11px;color:var(--fg3);margin-top:-6px;margin-bottom:12px}
+.badge{display:inline-flex;align-items:baseline;gap:8px;background:var(--panel2);border:1px solid var(--gold);border-radius:10px;padding:8px 14px}
+.badge .big{font-family:var(--font-mono);font-weight:700;font-size:26px;color:var(--gold2)}
+.badge .lbl{font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg3)}
+.fxgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:14px}
+@media (max-width:760px){.fxgrid{grid-template-columns:repeat(2,1fr)}}
+.fxgrid>div{background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.fxgrid .k{font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg3)}
+.fxgrid .v{font-family:var(--font-display);font-weight:600;font-size:17px;margin-top:2px}
+.fxgrid .d{font-size:12px;color:var(--fg2);margin-top:2px}
+.fx-lists{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+@media (max-width:640px){.fx-lists{grid-template-columns:1fr}}
+.fx-lists ul{margin:6px 0 0;padding-left:18px;font-size:13.5px;color:var(--fg2)}
+.fx-lists li{margin:4px 0}
+/* radar */
+.radar{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+@media (min-width:1100px){.radar{grid-template-columns:repeat(7,1fr)}}
+.node{position:relative;background:var(--panel2);border:1px solid var(--border);border-top:4px solid var(--c);border-radius:12px;padding:14px 14px 12px;transition:transform .22s ease,box-shadow .22s ease;min-width:0}
+.node:hover{transform:translateY(-4px);box-shadow:var(--shadow);z-index:3}
+.node.top{animation:nodepulse 2.4s ease-in-out infinite}
+@keyframes nodepulse{0%,100%{box-shadow:0 0 0 0 rgba(255,90,77,0)}50%{box-shadow:0 0 26px 0 rgba(255,90,77,.45)}}
+.node .nm{font-family:var(--font-mono);font-size:10.5px;letter-spacing:1.2px;text-transform:uppercase;color:var(--fg2);min-height:3.9em;line-height:1.3}
+.node .sc{font-family:var(--font-mono);font-weight:700;font-size:44px;line-height:1;color:var(--c);margin:6px 0 2px}
+.node .tr{font-family:var(--font-mono);font-size:13px;font-weight:600}
+.node .cf{font-family:var(--font-mono);font-size:11px;color:var(--fg3);margin-top:4px}
+.node svg{width:100%;height:34px;display:block;margin-top:8px}
+.node .exp{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--panel);border:1px solid var(--border2);border-radius:10px;padding:12px;font-size:12.5px;line-height:1.5;color:var(--fg2);opacity:0;pointer-events:none;transition:opacity .18s;box-shadow:var(--shadow);z-index:6}
+.node:hover .exp{opacity:1}
+.node .exp b{color:var(--fg);font-family:var(--font-mono)}
+.node .exp div{display:flex;justify-content:space-between;gap:8px;border-bottom:1px dashed var(--border);padding:3px 0}
+.driver{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center;border:1px solid var(--crit);background:linear-gradient(90deg,rgba(255,90,77,.14),transparent);border-radius:14px;padding:18px 22px;margin-top:16px}
+.driver .sc{font-family:var(--font-mono);font-weight:700;font-size:56px;line-height:1;color:var(--crit)}
+.driver h3{font-family:var(--font-display);font-weight:700;font-size:22px}
+.driver .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+@media (max-width:560px){.driver{grid-template-columns:1fr}}
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-family:var(--font-mono);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);padding:8px 10px;border-bottom:1px solid var(--border2)}
+td{padding:10px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--fg2)}
+td:first-child{color:var(--fg);font-weight:600;white-space:nowrap}
+.tbl{overflow-x:auto}
+.recs{counter-reset:r;display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.recs li{counter-increment:r;display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start;background:var(--panel2);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.recs li::before{content:counter(r,decimal-leading-zero);font-family:var(--font-mono);font-weight:700;font-size:22px;color:var(--gold)}
+.recs b{color:var(--fg)}
+.recs li{color:var(--fg2);font-size:13.5px}
+/* changed */
+.changed{display:grid;gap:10px}
+.changed div{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;border-left:3px solid var(--c);padding:6px 0 6px 12px;font-size:13.5px;color:var(--fg2)}
+.changed b{color:var(--fg)}
+.changed .tag{font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--c);padding-top:3px;white-space:nowrap}
+/* movers */
+.movers{display:grid;gap:12px}
+.mover{background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:16px;display:grid;gap:8px}
+.mover h3{font-family:var(--font-display);font-weight:700;font-size:18px}
+.mover .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;font-size:13px;color:var(--fg2)}
+.mover .kv span b{display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--fg3)}
+.mover p{margin:0;font-size:13.5px;color:var(--fg2)}
+/* executive insight */
+.insight{background:var(--insight-bg);color:var(--insight-fg);border-radius:18px;padding:0;display:grid;grid-template-columns:60fr 40fr;overflow:hidden;border:1px solid var(--insight-line);transition:transform .25s ease,box-shadow .25s ease;animation:fadeup .9s ease both}
+.insight:hover{transform:translateY(-4px);box-shadow:0 20px 50px rgba(0,0,0,.35)}
+@keyframes fadeup{from{opacity:.6;transform:translateY(14px)}to{opacity:1;transform:none}}
+.insight .l{padding:34px 36px;display:grid;gap:16px;align-content:start}
+.insight .eyebrow{color:#9A7434}
+.insight h2{font-family:var(--font-hero);font-weight:900;font-size:clamp(28px,3.6vw,44px);line-height:1.12;color:var(--insight-fg)}
+.insight h2 mark{background:linear-gradient(transparent 58%,#E9D6A6 58%);color:inherit;padding:0 2px}
+.insight p{margin:0;font-size:15.5px;color:var(--insight-fg2);max-width:62ch}
+.insight .chips{display:flex;gap:8px;flex-wrap:wrap}
+.insight .chips span{font-family:var(--font-mono);font-size:12px;font-weight:600;background:#fff;border:1px solid var(--insight-line);border-radius:999px;padding:4px 10px;color:#1B1712}
+.insight .acts{border-top:1px solid var(--insight-line);padding-top:12px}
+.insight .acts .eyebrow{font-size:11px}
+.insight .acts ol{margin:8px 0 0;padding-left:20px;color:var(--insight-fg);font-size:14.5px}
+.insight .acts li{margin:4px 0}
+.insight .r{background:#E9E2D4;display:flex;align-items:stretch}
+.insight .r svg{width:100%;height:100%;min-height:300px;display:block}
+@media (max-width:820px){.insight{grid-template-columns:1fr}.insight .r svg{min-height:220px}}
+.summary{border:1px solid var(--gold);border-radius:14px;padding:20px 24px;background:linear-gradient(90deg,rgba(203,165,106,.12),transparent)}
+.summary .eyebrow{margin-bottom:6px}
+.summary p{margin:0;font-family:var(--font-display);font-size:19px;line-height:1.4;color:var(--fg)}
+details{border:1px solid var(--border);border-radius:12px;padding:12px 18px;background:var(--panel)}
+summary{cursor:pointer;font-family:var(--font-mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--gold)}
+details ul{font-size:12.5px;color:var(--fg2);columns:2;column-gap:28px;padding-left:16px}
+@media (max-width:700px){details ul{columns:1}}
+.foot{font-family:var(--font-mono);font-size:11px;color:var(--fg3);text-align:center}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*,*::before,*::after{animation:none!important;transition:none!important}.cp-track .fill{width:var(--w)!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- MASTHEAD -->
+<header class="mast">
+  <div>
+    <div class="eyebrow">Energy · Freight · FX Intelligence — Australian Grain Export Desk</div>
+    <h1 class="brand">Mid-Week <span>Update</span></h1>
+  </div>
+  <div class="meta">
+    <span class="live"><i></i>WED 30 SEP 2026 · 09:30 AEST</span>
+    <span class="chip gold">MATERIAL CHANGES SINCE MON 28 SEP</span>
+    <span class="chip">Bias score 38/100</span>
+    <span class="chip bull">Confidence MEDIUM</span>
+    <span class="chip warn">30-day cost pressure MODERATE</span>
+  </div>
+</header>
+
+<!-- ALERT -->
+<div class="alert" role="status">
+  <span class="tag">ACTIVE SHOCK</span>
+  <div class="msg"><b>Supply-relief event inside a live Hormuz crisis.</b> Brent broke below US$100 (front-month ≈ 96) as Middle East crude exports hit 98% of pre-war and Saudi's East–West pipeline returned at half capacity. Iran's navy says the strait "remains closed"; Trump rejected Tehran's 7-day reopening plan. No new escalation since Monday — this is a flow story, not a peace story.</div>
+  <div class="stat">BRENT ≈ −11% W/W<br>DUBAI FLAT AT 114<br>AUD &lt; 0.70</div>
+</div>
+
+<!-- KPI ROW -->
+<section class="kpis" aria-label="Key market indicators">
+  <div class="kpi" style="--sev:var(--bull)"><div class="lbl">Brent · ICE front (Dec)</div><div class="val num" data-count="96.11" data-dec="2">96.11<small>US$/bbl</small></div><div class="chg"><span class="down">▼ −0.06% d</span><span class="down">▼ ≈−11% w</span></div><div class="note">Nov settled 102.59 (−2.6%) Tue</div></div>
+  <div class="kpi" style="--sev:var(--bull)"><div class="lbl">WTI · CME Nov</div><div class="val num" data-count="89.21" data-dec="2">89.21<small>US$/bbl</small></div><div class="chg"><span class="down">▼ −0.19% d</span><span class="down">▼ ≈−9% w</span></div><div class="note">−3.5% settle Tue; −4.8% intraday</div></div>
+  <div class="kpi" style="--sev:var(--crit)"><div class="lbl">Dubai · Platts (28 Sep)</div><div class="val num" data-count="114.06" data-dec="2">114.06<small>US$/bbl</small></div><div class="chg"><span class="down">▼ −0.26% d</span><span class="flat">◆ +0.1% w</span></div><div class="note">≈ US$18 over Brent — Asia still tight</div></div>
+  <div class="kpi" style="--sev:var(--warn)"><div class="lbl">Baltic Dry Index</div><div class="val num" data-count="3178" data-dec="0">3178<small>pts</small></div><div class="chg"><span class="down">▼ −2.75% d</span><span class="down">▼ −7.2% w</span></div><div class="note">Capes $42,775/d · Supramax 4-yr high</div></div>
+  <div class="kpi" style="--sev:var(--macro)"><div class="lbl">AUD / USD</div><div class="val num" data-count="0.6989" data-dec="4">0.6989</div><div class="chg"><span class="flat">▲ +0.08% d</span><span class="up">▼ −0.36% since Mon</span></div><div class="note">Below 50D 0.7093 &amp; 200D 0.7019</div></div>
+  <div class="kpi" style="--sev:var(--macro)"><div class="lbl">US Dollar Index</div><div class="val num" data-count="101.38" data-dec="2">101.38</div><div class="chg"><span class="up">▲ +0.18% d</span><span class="up">▲ +1.96% m</span></div><div class="note">2-month high · Fed Oct hike ~70%</div></div>
+  <div class="kpi" style="--sev:var(--bull)"><div class="lbl">Diesel TGP (AU nat. range)</div><div class="val num">258–274<small>c/L</small></div><div class="chg"><span class="down">▼ −9 to −10 c/L w</span></div><div class="note">AIP 29 Sep · Perth low, Darwin high</div></div>
+  <div class="kpi" style="--sev:var(--crit)"><div class="lbl">VLCC earnings (global avg)</div><div class="val num" data-count="642" data-dec="0">642<small>k US$/day</small></div><div class="chg"><span class="up">▲ +40% w (to 23 Sep)</span></div><div class="note">Oman–Korea US$845k/d · record</div></div>
+  <div class="kpi" style="--sev:var(--elev)"><div class="lbl">Market Stress Index</div><div class="val num" data-count="61" data-dec="0">61<small>/100</small></div><div class="chg"><span class="down">▼ −9 vs Mon</span></div><div class="note">Hormuz closed · exports 98% · deal post-3 Nov</div></div>
+</section>
+
+<!-- HERO CHART -->
+<section class="card">
+  <div class="card-head">
+    <div><div class="eyebrow">Crude Oil</div><h2 style="font-family:var(--font-display);font-weight:600;font-size:24px;margin-top:4px">Brent vs WTI — the 2026 Hormuz war, week by week</h2></div>
+    <div class="chart-legend"><span><i style="background:var(--gold)"></i>Brent (EIA Dated / ICE front)</span><span><i style="background:var(--macro)"></i>WTI Cushing</span><span class="sub">Weekly closes Jan → 30 Sep 2026 · latest week indicative</span></div>
+  </div>
+  <div class="chart-wrap" id="heroWrap">
+    <svg id="hero" viewBox="0 0 1000 420" role="img" aria-label="Weekly Brent and WTI prices January to September 2026 with annotations"></svg>
+    <div class="tip" id="heroTip"></div>
+  </div>
+</section>
+
+<!-- BIAS + COST PRESSURE -->
+<section class="two">
+  <div class="card">
+    <div class="card-head"><div class="eyebrow">Overall Market Bias</div><span class="sub">Energy-cost direction · next 30 days</span></div>
+    <div class="bias">
+      <div>
+        <div class="strip-lbl"><span>Bearish · relief</span><span>Bullish · cost risk</span></div>
+        <div class="strip"><div class="knob" id="knob" style="left:38%"></div></div>
+        <div class="strip-lbl"><span>0</span><span class="mono" style="color:var(--gold2)">SCORE <b id="biasScore" data-count="38" data-dec="0">38</b> / 100</span><span>100</span></div>
+      </div>
+      <svg class="gauge" viewBox="0 0 320 180" aria-label="Sentiment gauge reading 38 of 100">
+        <defs><linearGradient id="gg" x1="0" x2="1"><stop offset="0" stop-color="#57D38C"/><stop offset=".5" stop-color="#E9B554"/><stop offset="1" stop-color="#FF5A4D"/></linearGradient></defs>
+        <path d="M30 150 A130 130 0 0 1 290 150" fill="none" stroke="var(--panel2)" stroke-width="26" stroke-linecap="round"/>
+        <path d="M30 150 A130 130 0 0 1 290 150" fill="none" stroke="url(#gg)" stroke-width="18" stroke-linecap="round" opacity=".9"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--fg3)"><text x="26" y="172">BEARISH</text><text x="140" y="24">NEUTRAL</text><text x="250" y="172">BULLISH</text></g>
+        <g class="needle" style="--ang:-21.6deg"><polygon points="160,150 154,144 160,38 166,144" fill="var(--fg)"/><circle cx="160" cy="150" r="9" fill="var(--gold)"/></g>
+      </svg>
+      <div>
+        <div class="signal bear">Bearish</div>
+        <div style="font-size:13px;color:var(--fg2);margin-top:4px">for energy costs — a relief rally from a very high base. Absolute diesel is still ~50–60 c/L above pre-war.</div>
+      </div>
+      <div class="bias-facts">
+        <div><div class="k">Confidence</div><div class="v" style="color:var(--warn)">MEDIUM</div></div>
+        <div><div class="k">30-day cost pressure</div><div class="v" style="color:var(--warn)">MODERATE</div></div>
+        <div><div class="k">Oil direction</div><div class="v" style="color:var(--bull)">Mod. bearish</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card cp">
+    <div class="card-head"><div class="eyebrow">Cost Pressure — week to 30 Sep</div><span class="sub">hover a bar for detail</span></div>
+    <div class="cp-rows" id="cpRows">
+      <div class="cp-row" style="--c:var(--crit)"><div class="name">VLCC tanker rates<small>Gulf crude · to 23 Sep</small></div><div class="cp-track"><div class="fill" style="--w:100%"></div></div><div class="pct up" data-count="40" data-dec="0" data-sign="+">+40%</div><div class="tt"><b>+40% w/w</b> · global avg US$642k/day · Period: 16–23 Sep · Impact: extreme crude-freight costs are embedded in Asian refined-product prices — keeps Dubai/Singapore diesel elevated.</div></div>
+      <div class="cp-row" style="--c:var(--bull)"><div class="name">Brent crude<small>Dated / ICE front</small></div><div class="cp-track"><div class="fill" style="--w:28%"></div></div><div class="pct down" data-count="11" data-dec="0" data-sign="−">−11%</div><div class="tt"><b>≈ −11% w/w</b> · 114.89 (22 Sep) → ≈96–100 · Period: 23–30 Sep · Impact: relief for bunker &amp; diesel with 2–3 week lag.</div></div>
+      <div class="cp-row" style="--c:var(--bull)"><div class="name">WTI crude<small>CME Nov</small></div><div class="cp-track"><div class="fill" style="--w:23%"></div></div><div class="pct down" data-count="9" data-dec="0" data-sign="−">−9%</div><div class="tt"><b>≈ −9% w/w</b> · settled 89.38 Tue · SPR release up to 40 mb + API build +1.0 mb · Impact: US Gulf diesel exports to Asia become cheaper.</div></div>
+      <div class="cp-row" style="--c:var(--warn)"><div class="name">Baltic Dry Index<small>Capesize-led</small></div><div class="cp-track"><div class="fill" style="--w:18%"></div></div><div class="pct down" data-count="7.2" data-dec="1" data-sign="−">−7.2%</div><div class="tt"><b>−7.2% w/w</b> · 3,426 → 3,178 · Capesize −4.6% d/d on iron ore into Golden Week · Impact: neutral for grain — Panamax/Supramax firm.</div></div>
+      <div class="cp-row" style="--c:var(--bull)"><div class="name">Diesel TGP (AU)<small>AIP national</small></div><div class="cp-track"><div class="fill" style="--w:9%"></div></div><div class="pct down" data-count="3.6" data-dec="1" data-sign="−">−3.6%</div><div class="tt"><b>−9 to −10 c/L</b> (≈ −3.6%) · 258–274 c/L on 29 Sep · Impact: October fuel-surcharge resets should step down; more to come.</div></div>
+      <div class="cp-row" style="--c:var(--warn)"><div class="name">Container WCI<small>Drewry 24 Sep</small></div><div class="cp-track"><div class="fill" style="--w:3%"></div></div><div class="pct flat" data-count="1" data-dec="0" data-sign="−">−1%</div><div class="tt"><b>−1% w/w</b> · US$4,468/FEU · Shanghai–LA +2% on 15 blank sailings · Impact: box grain/pulses neutral; BAF should ease in Q4.</div></div>
+      <div class="cp-row" style="--c:var(--macro)"><div class="name">AUD / USD<small>since Mon close</small></div><div class="cp-track"><div class="fill" style="--w:2%"></div></div><div class="pct up" data-count="0.36" data-dec="2" data-sign="−">−0.36%</div><div class="tt"><b>−0.36%</b> · 0.7014 → 0.6989 · RBA 4.60% but softer guidance; DXY 2-mo high · Impact: USD-priced fuel/freight slightly dearer in AUD; export receipts better.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FX THERMOMETER -->
+<section class="card">
+  <div class="card-head">
+    <div><div class="eyebrow">FX &amp; Currency — top priority</div><h2 style="font-family:var(--font-display);font-weight:600;font-size:24px;margin-top:4px">AUD/USD slips under 0.70 despite the RBA's hike to 4.60%</h2></div>
+    <div class="badge"><span class="big" data-count="66" data-dec="0">66</span><span class="lbl">AUD Strength / 100 · upper-mid range</span></div>
+  </div>
+  <div class="therm" aria-label="AUD/USD 52-week range gauge">
+    <div class="tick below start" style="left:0%"><span>52W LOW 0.6421</span></div>
+    <div class="tick" style="left:69.8%"><span>200D 0.7019</span></div>
+    <div class="tick below" style="left:78.4%"><span>50D 0.7093</span></div>
+    <div class="tick end" style="left:100%"><span>52W HIGH 0.7278</span></div>
+    <div class="cur" style="left:66.3%" tabindex="0"><span>0.6989</span><div class="tt">Prev close 0.6983 · Mon 0.7014 · Δ since Mon −0.36%<br>DXY 101.38 (+1.96% m) · RBA 4.60% · Fed Oct hike ~70%</div></div>
+  </div>
+  <div class="therm-ends"><span>WEAK AUD → cheaper exports, dearer fuel</span><span>STRONG AUD → dearer exports, cheaper fuel</span></div>
+  <div class="fxgrid">
+    <div><div class="k">Range position</div><div class="v">66% of 52w</div><div class="d">but below both 50D &amp; 200D — technically bearish</div></div>
+    <div><div class="k">Bias (7–30d)</div><div class="v" style="color:var(--warn)">Sideways → Down</div><div class="d">0.6900–0.7050 base; PCE tonight, NFP Fri</div></div>
+    <div><div class="k">Export impact</div><div class="v" style="color:var(--bull)">Positive</div><div class="d">≈ +A$5–6/t on wheat per 1c fall</div></div>
+    <div><div class="k">Fuel-cost impact</div><div class="v" style="color:var(--elev)">Mild drag</div><div class="d">trims ~0.5pt off Brent's −11% in AUD terms</div></div>
+  </div>
+  <div class="fx-lists">
+    <div><div class="eyebrow" style="font-size:11px;color:var(--bull)">Bullish AUD</div><ul><li>RBA 4.60% with explicit hiking bias; 3 Nov meeting live</li><li>Terms of trade: Dubai US$114, gold ≈ US$4,180/oz</li><li>US consumer confidence 81.9 (lowest since 2014), JOLTS 7.08m — Fed may run out of road in Q4</li><li>US–China trade truce extended</li></ul></div>
+    <div><div class="eyebrow" style="font-size:11px;color:var(--crit)">Bearish AUD</div><ul><li>DXY 2-month high; US 10y ≈ 5.25%, 30y &gt; 5.6% (highest since 2002)</li><li>Fed's Barr: further hikes "will likely be needed"; Oct ~70% priced</li><li>Price under 50D/200D; supports 0.6943 then 0.6900</li><li>Iron ore weak into Golden Week; BMI cuts China 2026 fuel demand 8%</li></ul></div>
+  </div>
+</section>
+
+<!-- THREAT RADAR -->
+<section class="card">
+  <div class="card-head"><div><div class="eyebrow">Market Threat Radar</div><h2 style="font-family:var(--font-display);font-weight:600;font-size:24px;margin-top:4px">Seven live risks, scored 0–100 — hover a node</h2></div><span class="sub">score = probability × impact · Δ vs Monday</span></div>
+  <div class="radar" id="radar"></div>
+  <div class="driver" id="driver"></div>
+</section>
+
+<!-- KEY MOVERS + CHANGED -->
+<section class="two">
+  <div class="card">
+    <div class="card-head"><div class="eyebrow">Key Market Movers since Monday</div></div>
+    <div class="movers">
+      <div class="mover"><h3>Middle East exports back to 98% of pre-war — Brent breaks US$100</h3><p>Bloomberg tanker-tracking: 10-day average exports 17.5 mb/d. Saudi East–West pipeline (hit 10–11 Sep) restored to ~half of 4 mb/d; Yanbu shipments ≥ 3.5 mb/d; covert Hormuz transits ≥ 9 mb/d. US SPR release up to 40 mb.</p><div class="kv"><span><b>Location</b>Saudi / Yanbu / Gulf of Oman</span><span><b>Price</b>Brent Nov −2.6%, WTI −3.5%</span><span><b>Bias</b><span class="down">BEARISH costs</span></span><span><b>Duration</b>2–6 weeks; re-attack is the reversal risk</span></div></div>
+      <div class="mover"><h3>Trump rejects Iran's 7-day Hormuz plan; Qatar mediates; "deal after 3 Nov"</h3><p>Iran offered reopening for blockade lift, sanctions waivers, ~US$12bn frozen assets and a regional ceasefire. Trump: "unacceptable"; sanctions-easing reports a "hoax". Iranian navy: the strait "remains closed".</p><div class="kv"><span><b>Location</b>New York / Doha / Tehran</span><span><b>Price</b>caps downside ≈ US$90</span><span><b>Bias</b><span class="up">MILDLY BULLISH</span></span><span><b>Duration</b>≥ 5 weeks</span></div></div>
+      <div class="mover"><h3>RBA to 4.60% (highest since 2011); AUD closes below 0.70</h3><p>Unanimous hike; Bullock: may not need another "if inflation keeps falling", yet "would raise again if necessary". CPI 3.5% (July). Macquarie passes full 25 bp from 15 Oct.</p><div class="kv"><span><b>Location</b>Sydney / Washington</span><span><b>Price</b>AUD −0.3% on decision</span><span><b>Bias</b><span class="flat">AUD bearish</span></span><span><b>Duration</b>through Q4</span></div></div>
+      <div class="mover"><h3>US stocks: API crude +1.0 mb (exp. −1.9); distillate −0.29 mb; diesel export curbs mooted</h3><p>Distillates 12% below 5-yr avg; SPR 283.8 mb. Washington weighing diesel export limits (TotalEnergies' Pouyanné opposed) — bullish Asian/Australian diesel if enacted. EIA data tonight AEST.</p><div class="kv"><span><b>Location</b>USA</span><span><b>Bias</b><span class="flat">Bearish crude / bullish diesel crack</span></span><span><b>OPEC+</b>meets Sun 4 Oct — expected no change</span><span><b>Russia</b>diesel export ban to 30 Sep, extension to year-end mooted</span></div></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><div class="eyebrow">What has changed since Monday</div><span class="sub">new information only</span></div>
+    <div class="changed">
+      <div style="--c:var(--bull)"><span class="tag">Outlook ↓</span><span><b>Brent &lt; US$100.</b> Exports 98% of pre-war, pipeline at 50%, SPR 40 mb → energy-cost bias moves from Neutral/Bullish to <b>Bearish (relief)</b>.</span></div>
+      <div style="--c:var(--crit)"><span class="tag">Scenario cut</span><span><b>No quick reopening.</b> Trump rejects Iran's plan; no deal before 3 Nov → downside capped near US$90; "October reopening" scenario removed.</span></div>
+      <div style="--c:var(--macro)"><span class="tag">FX revised</span><span><b>AUD sub-0.70 after RBA 4.60%.</b> Direction revised Sideways → Sideways-Down; layered hedging on USD receivables now recommended.</span></div>
+      <div style="--c:var(--warn)"><span class="tag">No change</span><span><b>BDI −7% w/w</b> is Capesize/iron-ore; Panamax AU rounds US$20.5–26k/d, Supramax at 4-yr high → grain freight neutral.</span></div>
+      <div style="--c:var(--elev)"><span class="tag">Risk added</span><span><b>Distillate squeeze.</b> API distillate draw, US export-curb talk, Russian ban extension → new watchlist item; TGP relief may stall.</span></div>
+      <div style="--c:var(--bull)"><span class="tag">Procurement</span><span><b>Diesel TGP −9 to −10 c/L.</b> Defer forward buying; target 245–255 c/L by mid-Oct.</span></div>
+      <div style="--c:var(--crit)"><span class="tag">Timing</span><span><b>Dubai flat at 114 while Brent fell.</b> Inverted spread (≈ +US$18) means Asian product relief lags 2–3 weeks.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CRUDE OUTLOOK STRIP -->
+<section class="card">
+  <div class="card-head"><div class="eyebrow">Crude Oil Impact Analysis</div><span class="sub">Overall direction: <b style="color:var(--bull)">MODERATELY BEARISH</b> for energy costs</span></div>
+  <div class="fxgrid" style="margin-top:0">
+    <div><div class="k">1–7 days</div><div class="v" style="color:var(--bull)">Consolidating</div><div class="d">Brent US$92–100. Watch EIA, PCE, Iran's reply, OPEC+ Sun.</div></div>
+    <div><div class="k">2–4 weeks</div><div class="v" style="color:var(--warn)">Neutral</div><div class="d">Relief flows vs no deal; Golden Week; Dubai premium → +US$10.</div></div>
+    <div><div class="k">30 days</div><div class="v" style="color:var(--bull)">Mod. bearish</div><div class="d">Brent US$88–98, Dubai 100–110. Upside tails asymmetric.</div></div>
+    <div><div class="k">Refined fuels</div><div class="v" style="color:var(--elev)">Lagging</div><div class="d">Gulf diesel exports ~25% of pre-war; US distillates −12% vs 5-yr.</div></div>
+  </div>
+</section>
+
+<!-- LOGISTICS TABLE + RECS -->
+<section class="two">
+  <div class="card">
+    <div class="card-head"><div class="eyebrow">Australian Grain Logistics Impact</div><span class="chip bull">Margins: POSITIVE</span></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Area</th><th>Assessment (next 30 days)</th></tr></thead>
+      <tbody>
+        <tr><td>Diesel</td><td>TGP 258–274 c/L, −9–10 c/L w/w. Further −8 to −12 c/L over 2–3 wks if Brent holds &lt; 100; still ~50–60 c/L above pre-war.</td></tr>
+        <tr><td>Road freight</td><td>October surcharge resets step down; contract carriers lag 2–4 wks. −2 to −4% on total road rates.</td></tr>
+        <tr><td>Rail freight</td><td>Diesel-indexed Q4 adjustments ease; fuel is only ~15–20% of rail cost.</td></tr>
+        <tr><td>Container</td><td>WCI −1%; Asia–Oceania stable-soft; BAF eases at Q4 review. Neutral for box grain/pulses.</td></tr>
+        <tr><td>Bulk vessels</td><td>Panamax AU rounds US$20.5–26k/d; Supramax 4-yr high. Firm, not spiking. Pacific proximity advantage widens vs US Gulf/Black Sea.</td></tr>
+        <tr><td>Ports</td><td>No disruption. Bunker VLSFO US$874/mt easing. Golden Week (1–7 Oct) slows Chinese fixing.</td></tr>
+        <tr><td>Warehousing</td><td>Cash rate 4.60% lifts carry (~A$1/t/yr per 25 bp on A$400/t grain); site energy easing.</td></tr>
+        <tr><td>Supply-chain risks</td><td>Pipeline/Yanbu re-attack → Brent 110+ in days; US diesel export curbs; Russian ban extension; AUD &lt; 0.69.</td></tr>
+      </tbody></table></div>
+    <div class="fxgrid" style="margin-top:14px">
+      <div><div class="k">Likely cost increase</div><div class="v" style="color:var(--bull)">LOW</div><div class="d">net fuel decrease likely</div></div>
+      <div><div class="k">Likely timing</div><div class="v">≤ 2 weeks</div><div class="d">diesel; surcharges ≤ 30 days</div></div>
+      <div><div class="k">Export margins</div><div class="v" style="color:var(--bull)">POSITIVE</div><div class="d">weak AUD + falling diesel</div></div>
+      <div><div class="k">Key date</div><div class="v">3 Nov</div><div class="d">US midterms · RBA · deal window</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-head"><div class="eyebrow">Actionable Recommendations · 7–30 days</div></div>
+    <ol class="recs">
+      <li><span><b>Procurement — diesel:</b> do not lock forward at current levels; buy hand-to-mouth 2–3 weeks to capture the lagged fall (target TGP 245–255 c/L mid-Oct). Keep 25–30% tail cover (options) against a pipeline re-attack.</span></li>
+      <li><span><b>Logistics — surcharges:</b> trigger October fuel-surcharge resets now; index to latest weekly TGP, not September's average; audit any surcharge floors.</span></li>
+      <li><span><b>Export managers — FX:</b> layer 40–50% cover on Oct–Dec USD receivables at 0.69–0.70; a hot US PCE/NFP risks 0.69, a Hormuz deal lifts AUD sharply.</span></li>
+      <li><span><b>Chartering — bulk:</b> fix Oct–Nov Panamax/Supramax stems in the Golden Week lull (1–7 Oct); Supramax is at 4-yr highs, so weigh Panamax parcels/earlier laycans; add war-risk and Singapore-VLSFO bunker clauses.</span></li>
+      <li><span><b>Supply chain — contingency:</b> hold 10–14 days' on-site diesel through the 3 Nov window (midterms, RBA, OPEC+ 4 Oct); pre-agree alternate discharge ports for Asian buyers.</span></li>
+    </ol>
+  </div>
+</section>
+
+<!-- SOCIAL & TRADER INTELLIGENCE -->
+<section class="card">
+  <div class="card-head"><div class="eyebrow">Social &amp; Trader Intelligence</div><span class="sub">credible, widely-discussed only — politics excluded</span></div>
+  <div class="tbl"><table>
+    <thead><tr><th>Who</th><th>What they highlight</th><th>Why it matters</th></tr></thead>
+    <tbody>
+      <tr><td>Rebecca Babin · CIBC Private Wealth</td><td>"Increased flows through Hormuz and the restart of Saudi Arabia's East-West pipeline are giving the market some supply relief."</td><td>The consensus read of Tuesday's slide: a flow story, not a peace story.</td></tr>
+      <tr><td>Fatih Birol · IEA</td><td>Crisis would need to be "much bigger" and longer before fresh coordinated stock releases.</td><td>US SPR (40 mb) is the marginal balancer; no IEA backstop.</td></tr>
+      <tr><td>Jorge León · Rystad Energy</td><td>OPEC+ "can change production targets on paper, but it cannot guarantee that those barrels… reach the market."</td><td>Sunday's OPEC+ meeting discounted as a non-event.</td></tr>
+      <tr><td>Dryad Global · maritime security</td><td>"Technically restarted pipeline" ≠ "dependable export route"; Yanbu recovery "unproven", weeks away.</td><td>Red Sea war-risk premia are not being cut; relief is fragile.</td></tr>
+      <tr><td>Tanker desks · Breakwave</td><td>VLCC ≈ US$642k/day; ~15% of the global VLCC fleet parked in the Gulf of Oman on shuttle/STS work.</td><td>Capes falling while tankers hit records — capital rotating into tankers; grain tonnage unaffected.</td></tr>
+      <tr><td>Rabobank · FX positioning</td><td>USD net longs unchanged; desks waiting for PCE and NFP.</td><td>AUD downside is data-driven, not positional — room for a squeeze either way.</td></tr>
+      <tr><td>Australian grain brokers</td><td>Pacific Panamax/Supramax firm; Atlantic Supramax up on US Gulf grain.</td><td>Australia's short haul to Asia is a live freight advantage for Oct–Dec shipment.</td></tr>
+    </tbody></table></div>
+</section>
+
+<!-- RISK WATCHLIST -->
+<section class="card">
+  <div class="card-head"><div class="eyebrow">Risk Watchlist · ranked</div></div>
+  <div class="tbl"><table>
+    <thead><tr><th>#</th><th>Risk</th><th>Prob. (30d)</th><th>Impact</th><th>Market effect</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td>Hormuz re-escalation / attack on covert transits (no deal before 3 Nov)</td><td class="num">45%</td><td class="up">High</td><td>Brent +US$8–15; VLCC +20–35%; AUD −1–2c</td></tr>
+      <tr><td>2</td><td>Re-attack on Saudi East–West pipeline or Yanbu</td><td class="num">30%</td><td class="up">Very high</td><td>Brent +US$10–18 in days; erases this week's relief</td></tr>
+      <tr><td>3</td><td>Distillate squeeze: US diesel export curbs + Russian ban extension</td><td class="num">40%</td><td class="flat">Med-high</td><td>Asian diesel cracks +US$10–20; AU TGP stops falling</td></tr>
+      <tr><td>4</td><td>Fed Oct hike + hot PCE/NFP → AUD &lt; 0.69</td><td class="num">40%</td><td class="flat">Medium</td><td>USD inputs +1–2%; export receipts +1–2%</td></tr>
+      <tr><td>5</td><td>China demand slowdown (BMI: fuel −8% 2026; Golden Week)</td><td class="num">55%</td><td class="flat">Medium</td><td>Bearish crude &amp; Capesize; neutral grain freight</td></tr>
+      <tr><td>6</td><td>OPEC+ surprise cut (4 Oct)</td><td class="num">15%</td><td class="flat">Medium</td><td>Brent +US$3–5</td></tr>
+      <tr><td>7</td><td>Red Sea attack resumption</td><td class="num">25%</td><td class="flat">Medium</td><td>Asia–Europe boxes +10–20%; minor for AU–Asia</td></tr>
+    </tbody></table></div>
+</section>
+
+<!-- EXECUTIVE INSIGHT -->
+<section class="insight">
+  <div class="l">
+    <div class="eyebrow">Executive Insight</div>
+    <h2>Brent's break below $100 is a <mark>flow story</mark>, not a <mark>peace story</mark></h2>
+    <p>Saudi's pipeline is back at half capacity, covert Hormuz transits are running and Washington is draining the SPR. That is enough to pull crude down 11% in a week. It is not enough to reopen the strait: Tehran's offer was rejected, and the White House is pointing to 3 November. For an Australian grain exporter the maths this week is favourable: diesel falling, AUD under 0.70, Pacific freight firm but orderly.</p>
+    <div class="chips"><span>Brent ≈ 96 · −11% w/w</span><span>Dubai 114 · +US$18 over Brent</span><span>AUD/USD 0.6989</span><span>RBA 4.60%</span><span>Diesel TGP −10 c/L</span><span>BDI 3,178</span></div>
+    <div class="acts"><div class="eyebrow">Recommended action</div>
+      <ol><li>Defer forward diesel; buy hand-to-mouth for 2–3 weeks, keep 25–30% tail cover.</li><li>Reset October fuel surcharges to the latest weekly TGP.</li><li>Layer 40–50% FX cover on Oct–Dec USD receivables at 0.69–0.70.</li><li>Fix Oct–Nov Panamax/Supramax stems during Golden Week (1–7 Oct).</li></ol>
+    </div>
+  </div>
+  <div class="r" aria-hidden="true">
+    <svg viewBox="0 0 480 600" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFE6D3"/><stop offset="1" stop-color="#D9CDB6"/></linearGradient>
+        <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#B9C6C2"/><stop offset="1" stop-color="#8FA39F"/></linearGradient>
+      </defs>
+      <rect width="480" height="600" fill="url(#sky)"/>
+      <circle cx="380" cy="150" r="40" fill="#E3B872" opacity=".85"/>
+      <rect y="360" width="480" height="240" fill="url(#sea)"/>
+      <g transform="translate(0,150)">
+      <g stroke="#7E948F" stroke-width="1.5" opacity=".6"><path d="M0 250 q30 -6 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0"/><path d="M0 290 q30 -6 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0"/><path d="M0 330 q30 -6 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0"/><path d="M0 370 q30 -6 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0"/><path d="M0 410 q30 -6 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0"/></g>
+      <!-- grain silos -->
+      <g fill="#C9B995" stroke="#8C7A55" stroke-width="2"><rect x="30" y="120" width="34" height="92" rx="4"/><rect x="70" y="120" width="34" height="92" rx="4"/><rect x="110" y="120" width="34" height="92" rx="4"/><path d="M30 120 a17 12 0 0 1 34 0z"/><path d="M70 120 a17 12 0 0 1 34 0z"/><path d="M110 120 a17 12 0 0 1 34 0z"/></g>
+      <rect x="20" y="206" width="200" height="10" fill="#6B5B3E"/>
+      <!-- ship loader gantry -->
+      <g stroke="#5A4B33" stroke-width="4" fill="none"><path d="M150 206 V90 H230 L262 150"/><path d="M150 130 H230"/><path d="M230 90 V206"/></g>
+      <path d="M262 150 L268 168" stroke="#5A4B33" stroke-width="3"/>
+      <!-- bulk carrier -->
+      <g>
+        <path d="M250 232 L455 232 L440 258 L262 258 Z" fill="#3A3A3E" stroke="#1F1F22" stroke-width="2"/>
+        <rect x="262" y="214" width="180" height="18" fill="#B84A3C" stroke="#7A2E25" stroke-width="2"/>
+        <g fill="#D8D4C8" stroke="#8C8880" stroke-width="1.5"><rect x="272" y="204" width="28" height="10"/><rect x="308" y="204" width="28" height="10"/><rect x="344" y="204" width="28" height="10"/><rect x="380" y="204" width="28" height="10"/></g>
+        <rect x="408" y="178" width="30" height="36" fill="#EFEAE0" stroke="#8C8880" stroke-width="1.5"/>
+        <rect x="414" y="184" width="18" height="6" fill="#5DA9FF" opacity=".7"/>
+        <rect x="426" y="166" width="8" height="14" fill="#B84A3C"/>
+        <text x="300" y="226" font-family="IBM Plex Mono, monospace" font-size="8" fill="#F5F2EC" letter-spacing="1">AUSTRALIAN WHEAT · PANAMAX</text>
+      </g>
+      <!-- tanker on horizon -->
+      <g opacity=".75"><path d="M300 200 L392 200 L386 210 L306 210 Z" fill="#4F5A64"/><rect x="368" y="190" width="14" height="10" fill="#8B949B"/><rect x="304" y="194" width="60" height="6" fill="#8B949B"/></g>
+      <!-- birds -->
+      <g stroke="#6B5B3E" stroke-width="1.5" fill="none"><path d="M200 70 q6 -6 12 0 q6 -6 12 0"/><path d="M230 90 q5 -5 10 0 q5 -5 10 0"/></g>
+      </g>
+      <text x="24" y="40" font-family="Fraunces, serif" font-size="13" fill="#6B5B3E" letter-spacing="2">PACIFIC ADVANTAGE</text>
+      <text x="24" y="58" font-family="IBM Plex Sans, sans-serif" font-size="10" fill="#8C7A55">Short haul to Asia vs US Gulf &amp; Black Sea</text>
+    </svg>
+  </div>
+</section>
+
+<!-- SUMMARY -->
+<section class="summary">
+  <div class="eyebrow">If we only remember one thing from today's report</div>
+  <p>Brent's break below US$100 is a <b>flow</b> story (Saudi pipeline + covert Hormuz transits + SPR), not a <b>peace</b> story — so defer forward diesel buying to capture the lagged fall, but hedge the tail, because one more drone on the East–West pipeline puts every cent of this week's relief straight back on.</p>
+</section>
+
+<details>
+  <summary>Sources (27)</summary>
+  <ul>
+    <li><a href="https://www.rigzone.com/news/wire/oil_slides_on_saudi_supply_relief-29-sep-2026-184732-article/">Rigzone / Bloomberg wire — Oil Slides on Saudi Supply Relief (29 Sep)</a></li>
+    <li><a href="https://tradingeconomics.com/commodity/brent-crude-oil">Trading Economics — Brent</a> · <a href="https://tradingeconomics.com/commodity/crude-oil">WTI</a> · <a href="https://tradingeconomics.com/united-states/currency">DXY</a></li>
+    <li><a href="https://fortune.com/article/price-of-oil-09-29-2026/">Fortune — price of oil 29 Sep 2026</a></li>
+    <li><a href="https://www.aljazeera.com/news/2026/9/29/us-iran-talks-in-new-york-whats-the-latest">Al Jazeera — US–Iran talks, what's the latest (29 Sep)</a></li>
+    <li><a href="https://www.aljazeera.com/news/2026/9/29/irans-araghchi-meets-qatari-mediators-as-us-insists-on-nuclear-talks">Al Jazeera — Araghchi meets Qatari mediators (29 Sep)</a></li>
+    <li><a href="https://channel16.dryadglobal.com/saudi-east-west-pipeline-restart-what-it-means-for-yanbu-exports">Dryad Global — East–West pipeline restart</a></li>
+    <li><a href="https://oilprice.com/Latest-Energy-News/World-News/US-Distillate-Stocks-Continue-to-Fall-As-Crude-Inventories-Build.html">OilPrice.com — API inventories (29 Sep)</a></li>
+    <li><a href="https://www.iea.org/reports/oil-market-report-september-2026">IEA Oil Market Report — September 2026</a></li>
+    <li><a href="https://www.energyconnects.com/news/oil/2026/september/opecplus-keeps-output-policy-unchanged-for-october">EnergyConnects — OPEC+ October policy</a></li>
+    <li><a href="https://www.rigzone.com/news/analysts_say_china_2026_oil_gas_demand_outlook_weakens-24-sep-2026-184691-article/">Rigzone / BMI — China demand outlook (24 Sep)</a></li>
+    <li><a href="https://www.thenationalnews.com/business/energy/2026/09/23/oil-tanker-earnings-near-650000-per-day-as-middle-east-disruption-deepens/">The National — VLCC earnings (23 Sep)</a></li>
+    <li><a href="https://www.bairdmaritime.com/shipping/dry-cargo/bulkers/baltic-dry-bulk-index-drops-to-near-one-month-low-on-softer-rates">Baird Maritime — BDI 29 Sep</a></li>
+    <li><a href="https://www.thedcn.com.au/news/baltic-exchange-weekly-report-25-september-2026">Baltic Exchange weekly report 25 Sep (DCN)</a></li>
+    <li><a href="https://www.thedcn.com.au/news/world-container-index-24-september-2026">Drewry WCI 24 Sep (DCN)</a></li>
+    <li><a href="https://www.oilpriceapi.com/marine-fuel/singapore">Oil Price API — Singapore bunkers</a></li>
+    <li><a href="https://www.investing.com/commodities/dubai-crude-oil-platts-futures-historical-data">Investing.com — Platts Dubai futures</a></li>
+    <li><a href="https://www.rba.gov.au/media-releases/2026/mr-26-27.html">RBA — Monetary Policy Decision 29 Sep 2026</a></li>
+    <li><a href="https://www.abc.net.au/news/2026-09-29/asx-markets-business-news-live-updates-tuesday-29-september/107206212">ABC News — markets live 29 Sep</a></li>
+    <li><a href="https://www.fxstreet.com/news/australian-dollar-consolidates-above-07000-vs-usd-as-bears-await-rba-rate-decision-202609290223">FXStreet — AUD/USD ahead of RBA</a></li>
+    <li><a href="https://www.fxstreet.com/news/united-states-dollar-index-strengthens-as-oil-surge-bolster-fed-rate-hike-bets-202609290212">FXStreet — DXY / Fed hike bets</a></li>
+    <li><a href="https://www.fxstreet.com/news/forex-today-focus-shifts-to-us-pce-adp-inflation-in-oz-and-chinese-pmis-202609291806">FXStreet — Forex Today (30 Sep calendar)</a></li>
+    <li><a href="https://www.babypips.com/news/financial-forex-market-recap-2026-09-29">BabyPips — market recap 29 Sep</a></li>
+    <li><a href="https://aip.com.au/pricing/terminal-gate-prices/">Australian Institute of Petroleum — Terminal Gate Prices</a></li>
+    <li><a href="https://www.abs.gov.au/statistics/economy/price-indexes-and-inflation/consumer-price-index-australia/latest-release">ABS — CPI July 2026</a></li>
+    <li><a href="https://www.aljazeera.com/economy/2026/9/13/red-sea-nations-watch-as-houthis-seize-bab-al-mandeb-strait">Al Jazeera — Houthis seize Bab al-Mandeb</a></li>
+    <li><a href="https://english.nv.ua/business/russia-to-extend-diesel-export-ban-as-ukrainian-drone-strikes-hit-refineries-reuters-50635575.html">NV / Reuters — Russia diesel export ban</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/2026_Strait_of_Hormuz_crisis">2026 Strait of Hormuz crisis — timeline</a> · EIA spot series via Alpha Vantage · FMP AUD/USD quote</li>
+  </ul>
+</details>
+
+<div class="foot">Prepared by the Energy, Commodity, Freight &amp; Macro Intelligence desk · Facts sourced as listed; forward views are analysis, not advice · Prices as at compile time, 30 Sep 2026</div>
+</div>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* ---------- count-up ---------- */
+  function countUp(el){
+    var target=parseFloat(el.getAttribute('data-count')), dec=parseInt(el.getAttribute('data-dec')||'0',10), sign=el.getAttribute('data-sign')||'';
+    var suffix=el.querySelector('small'); var suf=suffix?suffix.outerHTML:'';
+    var pct=el.classList.contains('pct');
+    if(reduce){return;}
+    var start=null, dur=1100;
+    function fmt(v){ var s=v.toFixed(dec); if(dec===0&&target>=1000) s=Number(s).toLocaleString('en-AU'); return sign+s+(pct?'%':''); }
+    function step(ts){ if(!start)start=ts; var p=Math.min(1,(ts-start)/dur); p=1-Math.pow(1-p,3); el.innerHTML=fmt(target*p)+suf; if(p<1)requestAnimationFrame(step); }
+    requestAnimationFrame(step);
+  }
+  document.querySelectorAll('[data-count]').forEach(countUp);
+  /* ---------- cost-pressure bars ---------- */
+  var fills=document.querySelectorAll('.cp-track .fill');
+  fills.forEach(function(f,i){ setTimeout(function(){ f.style.width=getComputedStyle(f).getPropertyValue('--w').trim(); }, reduce?0:120+i*110); });
+  /* ---------- hero chart ---------- */
+  var weeks=[['02 Jan',62.18,57.54],['09 Jan',62.93,57.56],['16 Jan',67.00,60.12],['23 Jan',66.99,60.16],['30 Jan',70.43,62.90],['06 Feb',69.84,63.09],['13 Feb',70.70,63.93],['20 Feb',71.66,65.30],['27 Feb',71.36,65.87],['06 Mar',85.28,78.37],['13 Mar',96.16,91.85],['20 Mar',111.40,96.07],['27 Mar',111.24,94.29],['03 Apr',123.94,105.67],['10 Apr',124.61,104.54],['17 Apr',114.43,93.84],['24 Apr',109.62,95.43],['01 May',119.63,105.57],['08 May',105.88,102.28],['15 May',110.53,105.10],['22 May',110.61,105.32],['29 May',97.05,93.45],['05 Jun',98.95,96.87],['12 Jun',93.76,92.16],['19 Jun',81.00,81.36],['26 Jun',73.63,73.59],['03 Jul',69.70,70.48],['10 Jul',73.33,72.26],['17 Jul',82.93,80.77],['24 Jul',96.12,88.58],['31 Jul',91.63,84.51],['07 Aug',87.86,78.94],['14 Aug',92.51,84.05],['21 Aug',94.20,87.35],['28 Aug',89.73,84.62],['04 Sep',99.09,91.18],['11 Sep',112.50,101.80],['18 Sep',115.00,103.50],['25 Sep',110.00,96.50],['30 Sep',98.00,89.21]];
+  var ann=[[9,'War begins · Hormuz shut',-1],[14,'Peak 124.6',-1],[17,'Ceasefire · Islamabad talks',-1],[26,'Back to pre-war ~70',1],[29,'Attacks resume',-1],[36,'E–W pipeline hit',-1],[39,'Pipeline back · Brent <$100',1]];
+  var svg=document.getElementById('hero'), NS='http://www.w3.org/2000/svg';
+  var W=1000,H=420,L=56,R=150,T=42,B=44, minV=50,maxV=130;
+  var x=function(i){return L+(W-L-R)*i/(weeks.length-1)}, y=function(v){return T+(H-T-B)*(1-(v-minV)/(maxV-minV))};
+  function el(n,a,txt){var e=document.createElementNS(NS,n);for(var k in a)e.setAttribute(k,a[k]);if(txt!=null)e.textContent=txt;svg.appendChild(e);return e;}
+  var defs=el('defs',{}); defs.innerHTML='<linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#CBA56A" stop-opacity=".35"/><stop offset="1" stop-color="#CBA56A" stop-opacity="0"/></linearGradient>';
+  [60,70,80,90,100,110,120].forEach(function(v){ el('line',{x1:L,x2:W-R,y1:y(v),y2:y(v),stroke:'var(--grid)','stroke-width':1}); el('text',{x:L-8,y:y(v)+4,'text-anchor':'end','font-family':'IBM Plex Mono, monospace','font-size':11,fill:'var(--fg3)'},'$'+v); });
+  [[100,'$100 · stress line','var(--crit)'],[80,'$80 · comfort line','var(--bull)']].forEach(function(t){ el('line',{x1:L,x2:W-R,y1:y(t[0]),y2:y(t[0]),stroke:t[2],'stroke-width':1.2,'stroke-dasharray':'6 5',opacity:.7}); el('text',{x:L+8,y:y(t[0])-6,'text-anchor':'start','font-family':'IBM Plex Mono, monospace','font-size':10,fill:t[2]},t[1]); });
+  var monthIdx=[0,5,9,13,17,22,26,31,35]; var monthLbl=['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP'];
+  monthIdx.forEach(function(i,k){ el('text',{x:x(i),y:H-B+22,'text-anchor':'middle','font-family':'IBM Plex Mono, monospace','font-size':11,fill:'var(--fg3)'},monthLbl[k]); });
+  var pB='',pW='';
+  weeks.forEach(function(w,i){ pB+=(i?'L':'M')+x(i).toFixed(1)+' '+y(w[1]).toFixed(1)+' '; pW+=(i?'L':'M')+x(i).toFixed(1)+' '+y(w[2]).toFixed(1)+' '; });
+  el('path',{d:pB+'L'+x(weeks.length-1).toFixed(1)+' '+y(minV)+' L'+L+' '+y(minV)+' Z',fill:'url(#ga)'});
+  el('path',{d:pW,fill:'none',stroke:'var(--macro)','stroke-width':2,'stroke-linejoin':'round'});
+  el('path',{d:pB,fill:'none',stroke:'var(--gold)','stroke-width':3,'stroke-linejoin':'round'});
+  ann.forEach(function(a){ var i=a[0],dir=a[2],v=dir<0?weeks[i][1]:Math.min(weeks[i][1],weeks[i][2]); var yy=y(v), ty=dir<0?yy-26:yy+34; el('line',{x1:x(i),x2:x(i),y1:yy,y2:dir<0?ty+6:ty-14,stroke:'var(--fg3)','stroke-width':1,'stroke-dasharray':'3 3'}); el('circle',{cx:x(i),cy:yy,r:4,fill:'var(--gold)',stroke:'var(--bg)','stroke-width':2}); var anchor=i>=36?'end':(i<3?'start':'middle'); el('text',{x:x(i),y:ty,'text-anchor':anchor,'font-family':'IBM Plex Sans, sans-serif','font-size':11,'font-weight':600,fill:'var(--fg2)'},a[1]); });
+  var last=weeks.length-1;
+  el('circle',{cx:x(last),cy:y(weeks[last][1]),r:7,fill:'var(--gold)',stroke:'var(--bg)','stroke-width':3});
+  el('circle',{cx:x(last),cy:y(weeks[last][2]),r:6,fill:'var(--macro)',stroke:'var(--bg)','stroke-width':3});
+  el('text',{x:x(last)+14,y:y(weeks[last][1])+4,'text-anchor':'start','font-family':'IBM Plex Mono, monospace','font-size':12,'font-weight':700,fill:'var(--gold2)'},'BRENT ≈ 96–100');
+  el('text',{x:x(last)+14,y:y(weeks[last][2])+5,'text-anchor':'start','font-family':'IBM Plex Mono, monospace','font-size':12,'font-weight':700,fill:'var(--macro)'},'WTI 89.21');
+  var hover=el('line',{x1:0,x2:0,y1:T,y2:H-B,stroke:'var(--fg2)','stroke-width':1,opacity:0});
+  var tip=document.getElementById('heroTip'), wrap=document.getElementById('heroWrap');
+  svg.addEventListener('mousemove',function(e){ var r=svg.getBoundingClientRect(); var px=(e.clientX-r.left)/r.width*W; var i=Math.round((px-L)/(W-L-R)*(weeks.length-1)); i=Math.max(0,Math.min(last,i)); hover.setAttribute('x1',x(i));hover.setAttribute('x2',x(i));hover.setAttribute('opacity',.6); tip.innerHTML='<b>'+weeks[i][0]+' 2026</b><br>Brent $'+weeks[i][1].toFixed(2)+' · WTI $'+weeks[i][2].toFixed(2)+'<br>Spread $'+(weeks[i][1]-weeks[i][2]).toFixed(2); tip.style.left=(x(i)/W*100)+'%'; tip.style.top=(y(Math.max(weeks[i][1],weeks[i][2]))/H*100)+'%'; tip.classList.add('on'); });
+  svg.addEventListener('mouseleave',function(){hover.setAttribute('opacity',0);tip.classList.remove('on');});
+  /* ---------- threat radar ---------- */
+  var risks=[
+    {n:'Strait of Hormuz · escalation',s:78,d:-9,c:'crit',cf:72,p:'45%',b:'+US$8–15/bbl',f:'VLCC +20–35% · grain neutral',t:'≥ 5 weeks (to 3 Nov)',sp:[70,74,80,86,87,84,80,78]},
+    {n:'Red Sea / Bab al-Mandeb',s:66,d:4,c:'elev',cf:60,p:'25–30%',b:'+US$10–18 if Yanbu hit',f:'Asia–Europe boxes +10–20%',t:'structural',sp:[40,44,52,58,60,62,64,66]},
+    {n:'Distillate squeeze (Russia ban · US curbs)',s:64,d:6,c:'elev',cf:65,p:'40%',b:'diesel crack +US$10–20',f:'AU TGP relief stalls',t:'4–8 weeks',sp:[50,52,55,58,60,58,60,64]},
+    {n:'Fed / USD · AUD < 0.69',s:62,d:6,c:'macro',cf:70,p:'40%',b:'neutral',f:'USD inputs +1–2%',t:'to 28 Oct FOMC',sp:[48,50,52,55,56,58,60,62]},
+    {n:'Saudi E–W pipeline re-attack',s:58,d:-6,c:'crit',cf:55,p:'30%',b:'+US$10–18 in days',f:'tanker rates +15–25%',t:'days to weeks',sp:[30,60,72,70,66,64,62,58]},
+    {n:'China demand · Capesize',s:52,d:5,c:'gold',cf:68,p:'55%',b:'−US$3–6 (bearish)',f:'Capes −; Panamax neutral',t:'Golden Week + Q4',sp:[38,40,42,45,47,48,50,52]},
+    {n:'OPEC+ surprise · 4 Oct',s:45,d:3,c:'gold',cf:62,p:'15%',b:'+US$3–5',f:'minor',t:'1 week',sp:[40,40,42,42,43,44,44,45]}
+  ];
+  var colors={crit:'var(--crit)',elev:'var(--elev)',gold:'var(--warn)',macro:'var(--macro)',bull:'var(--bull)'};
+  var radar=document.getElementById('radar'); var topIdx=0; risks.forEach(function(r,i){if(r.s>risks[topIdx].s)topIdx=i;});
+  risks.forEach(function(r,i){
+    var d=document.createElement('div'); d.className='node'+(i===topIdx?' top':''); d.style.setProperty('--c',colors[r.c]); d.tabIndex=0;
+    var pts=r.sp.map(function(v,k){return (k*(100/7)).toFixed(1)+','+(34-(v-25)/(90-25)*30).toFixed(1)}).join(' ');
+    var arrow=r.d>0?'▲ +'+r.d:(r.d<0?'▼ '+r.d:'◆ 0'); var acls=r.d>0?'up':(r.d<0?'down':'flat');
+    d.innerHTML='<div class="nm">'+r.n+'</div><div class="sc" data-count="'+r.s+'" data-dec="0">'+r.s+'</div><div class="tr '+acls+'">'+arrow+' vs Mon</div><div class="cf">Confidence '+r.cf+'%</div>'+
+      '<svg viewBox="0 0 100 36" preserveAspectRatio="none"><polyline points="'+pts+'" fill="none" stroke="'+colors[r.c]+'" stroke-width="2" vector-effect="non-scaling-stroke"/><circle cx="100" cy="'+(34-(r.sp[7]-25)/(90-25)*30).toFixed(1)+'" r="2.5" fill="'+colors[r.c]+'"/></svg>'+
+      '<div class="exp"><div><span>Score</span><b>'+r.s+' ('+(r.d>0?'+':'')+r.d+')</b></div><div><span>Probability 30d</span><b>'+r.p+'</b></div><div><span>Brent impact</span><b>'+r.b+'</b></div><div><span>Freight impact</span><b>'+r.f+'</b></div><div><span>Duration</span><b>'+r.t+'</b></div><div><span>Updated</span><b>30 Sep 09:30 AEST</b></div></div>';
+    radar.appendChild(d); countUp(d.querySelector('.sc'));
+  });
+  var top=risks[topIdx];
+  document.getElementById('driver').innerHTML='<div class="sc">'+top.s+'</div><div><div class="eyebrow" style="color:var(--crit)">Today\'s biggest driver</div><h3>'+top.n.replace(' · ',' — ')+'</h3><div style="font-size:13.5px;color:var(--fg2);margin-top:4px">Risk score <b class="mono">'+top.s+' ('+top.d+' vs Mon)</b> — the score fell because exports recovered, but it stays the top node: no deal before 3 Nov, the navy says the strait is closed, and every barrel of this week\'s relief depends on covert transits and one half-repaired pipeline.</div><div class="row"><span class="chip crit">Brent impact '+top.b+'</span><span class="chip warn">Freight '+top.f+'</span><span class="chip">Probability '+top.p+'</span><span class="chip">Duration '+top.t+'</span></div></div>';
+})();
+</script>
+
+</body>
+</html>
