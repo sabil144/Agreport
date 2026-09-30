@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Archive | Commodex Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="topbar">
+      <div class="brand-wrap">
+        <div class="brand-mark">C</div>
+        <div>
+          <div class="brand-name">Commodex Intelligence</div>
+          <div class="brand-sub">Daily market briefing · energy, fertiliser, commodities</div>
+        </div>
+      </div>
+      <nav class="topnav">
+        <a href="index.html">Home</a>
+        <a href="fertiliser/">Fertiliser</a>
+        <a href="commodity/">Commodity</a>
+        <a href="energy/">Energy</a>
+        <a href="archive.html" class="is-active">Archive</a>
+      </nav>
+    </header>
+
+    <main class="shell">
+      <div class="page-header">
+        <div>
+          <div class="eyebrow">Archive</div>
+          <h1>Search all previous reports</h1>
+        </div>
+        <div class="subtle">Filter by topic or keyword</div>
+      </div>
+
+      <div class="archive-toolbar">
+        <div class="search-wrap">
+          <input id="searchInput" type="text" placeholder="Search reports… e.g. wheat or diesel" aria-label="Search reports">
+        </div>
+        <div class="filter-row">
+          <button class="filter-pill is-active" data-filter="all">All</button>
+          <button class="filter-pill" data-filter="fertiliser">Fertiliser</button>
+          <button class="filter-pill" data-filter="commodity">Commodity</button>
+          <button class="filter-pill" data-filter="energy">Energy</button>
+        </div>
+      </div>
+
+      <div id="archiveList" class="listing"></div>
+    </main>
+  </div>
+
+  <script src="assets/js/archive.js"></script>
+</body>
+</html>
